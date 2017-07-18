@@ -1,38 +1,38 @@
 #include "../Header/Debug.h"
 
-Debug::Debug() : window(sf::VideoMode(400, 800), "Debug") {
+Debug::Debug(Map* map, Player* player) : map(map), player(player), window(sf::VideoMode(400, 800), "Debug") {
     RessourcesLoader::load<sf::Font>("roboto", "Font/Roboto-Regular.ttf");
+    rebuild();
 }
 
 Debug::~Debug () {
 
 }
 
-void Debug::use(const Map* map) {
+void Debug::use(Map* map) {
     this->map = map;
-    ui.resetRoot(load(map));
+    rebuild();
 }
 
-UI::Panel* Debug::load(const Map* map) {
-    return createCollapsablePanel("Map", createText(std::string(typeid(Map).name()).substr(1) + " map"), [map, this] (UI::Panel* panel) {
-        for (auto& hex : map->hexs) {
-            panel->push_back(load(&hex.second));
-        }
-    });
+void Debug::use(Player* player) {
+    this->player = player;
+    rebuild();
 }
 
-UI::Panel* Debug::load(const Hex* hex) {
-    return createCollapsablePanel("Hex", createText("." + std::string(typeid(Hex).name()).substr(1) + " hex"), [hex, this] (UI::Panel* panel) {
-        sf::Text textx = createText(". x : " + std::to_string(hex->x));
-        sf::Text texty = createText(". y : " + std::to_string(hex->y));
-        panel->push_back(new UI::Text("X", textx));
-        panel->push_back(new UI::Text("Y", texty));
-    });
+void Debug::rebuild() {
+    UI::Panel* menu = new UI::Panel("Menu");
+    if (map)
+        menu->push_back(load(map, "map"));
+    if(player)
+        menu->push_back(load(player, "player"));
+
+    ui.resetRoot(menu);
 }
 
 void Debug::update() {
     if (!window.isOpen())
         return;
+
     sf::Event event;
     while (window.pollEvent(event)) {
         if (event.type == sf::Event::Closed) {
@@ -42,6 +42,9 @@ void Debug::update() {
         }
         if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
             ui.manageOnClick(event.mouseButton.x, event.mouseButton.y);
+        }
+        if (event.type == sf::Event::MouseWheelScrolled) {
+            ui.manageScroll(event.mouseWheelScroll.delta);
         }
     }
 
@@ -64,6 +67,7 @@ sf::Text Debug::createText(sf::String const& str) {
 
 UI::Panel* Debug::createCollapsablePanel(std::string const& name, sf::Text title, std::function<void(UI::Panel*)> onClickFunc) {
     UI::Panel* panel = new UI::Panel(name);
+    //panel->changeMarge(0, 10, 0, 0);
     sf::String title_str_collapse = "> " + title.getString();
     sf::String title_str_not_collapse = "v " + title.getString();
     title.setString(title_str_collapse);
@@ -76,8 +80,12 @@ UI::Panel* Debug::createCollapsablePanel(std::string const& name, sf::Text title
             if (UI::Text* _title = dynamic_cast<UI::Text*>( panel->getElementAt(0) ) )
                 _title->setString(title_str_not_collapse);
 
+            UI::Panel* sub_panel = new UI::Panel("list");
+            sub_panel->changeMarge(15, 0, 0, 0);
+
             if (onClickFunc)
-                onClickFunc(panel);
+                onClickFunc(sub_panel);
+            panel->push_back(sub_panel);
         } else {
             collapsed = true;
             if (UI::Text* _title = dynamic_cast<UI::Text*>( panel->getElementAt(0) ) )

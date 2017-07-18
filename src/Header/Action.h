@@ -32,7 +32,7 @@ public:
     std::vector<const Hex*> getPossibleCells(Map const& map, const Hex* caster_cell);
 
 private:
-    Type type = Type::INLINE;
+    Type type = Type::BASIC;
     Area area = Area::POINT;
 
     int min_distance = 0;

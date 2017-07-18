@@ -1,12 +1,45 @@
 #include "../Header/UI.h"
 
-UI::Element::Element(std::string const& name) : collision({0, 0, 0, 0}), name(name) {
+UI::Element::Element(std::string const& name) : size({0, 0}), position({0, 0}), marge({0, 0, 0, 0}), name(name) {
 
 }
 
 UI::Element::~Element() {
 
 }
+
+void UI::Element::changeMarge (UI::Element::Marge marges) {
+    changeMarge(marges.left, marges.top, marges.right, marges.bottom);
+}
+
+void UI::Element::changeMarge (float left, float top, float right, float bottom) {
+    marge = {left, top, right, bottom};
+    updateSize();
+}
+
+float UI::Element::getLeftMarge() const {
+    return marge.left;
+}
+
+float UI::Element::getTopMarge() const {
+    return marge.top;
+}
+
+float UI::Element::getBottomMarge() const {
+    return marge.bottom;
+}
+
+float UI::Element::getRightMarge() const {
+    return marge.right;
+}
+
+float UI::Element::getVerticalMarge() const {
+    return getBottomMarge() + getTopMarge();
+}  
+
+float UI::Element::getHorizontalMarge() const {
+    return getRightMarge() + getLeftMarge();
+}  
 
 void UI::Element::setParent(Element* new_parent) {
     parent = new_parent;
@@ -21,29 +54,30 @@ std::string UI::Element::getName() {
 }
 
 
-sf::Vector2f UI::Element::getRelativePosition() {
-    return { collision.left, collision.top };
+UI::Element::Position UI::Element::getRelativePosition() {
+    return { position.x, position.y };
 }
 
-sf::Vector2f UI::Element::getAbsolutePosition() {
+UI::Element::Position UI::Element::getAbsolutePosition() {
     if (parent) {
         auto parentPos = parent->getAbsolutePosition();
-        return { collision.left + parentPos.x, collision.top + parentPos.y };
+        auto relativePos = getRelativePosition();
+        return { relativePos.x + parentPos.x, relativePos.y + parentPos.y };
     } else {
-        return { 10, 10 };
+        return getRelativePosition();
     }
 }
 
 void UI::Element::changeSize (float width, float height) {
-    collision.width = width;
-    collision.height = height;
+    size.width = width + getHorizontalMarge();
+    size.height = height + getVerticalMarge();
     if (parent) {
         parent->updateSize();
     }
 }
 
 void UI::Element::updateSize () {
-    
+    changeSize(0, 0);
 }
 
 void UI::Element::setOnClick(UI::Element::onClickFunc func) {
@@ -51,16 +85,26 @@ void UI::Element::setOnClick(UI::Element::onClickFunc func) {
 }
 
 
-void UI::Element::show (sf::RenderWindow& window) {
-    assert(("Should not be call \"UI::Element::show\"", false));
+void UI::Element::show (UI const& 
+#if DEBUG > 1
+                                          ui) {
+    auto abs_pos = getAbsolutePosition();
+    sf::RectangleShape box_collider({size.width, size.height});
+    box_collider.setPosition(abs_pos);
+    box_collider.setOutlineColor(sf::Color::Blue);
+    box_collider.setOutlineThickness(6);
+    ui.draw(box_collider);
+#else
+                                          ) {
+#endif
 }
 
 bool UI::Element::manageOnClick(int x, int y) {
     auto abs_pos = getAbsolutePosition();
     if (abs_pos.x > x || 
-        abs_pos.x + collision.width < x ||
+        abs_pos.x + size.width < x ||
         abs_pos.y > y ||
-        abs_pos.y + collision.height < y)
+        abs_pos.y + size.height < y)
         return false;
     
     if (onClick)
@@ -70,7 +114,7 @@ bool UI::Element::manageOnClick(int x, int y) {
 }
 
 UI::Text::Text(std::string const& name) : Element(name) {
-    
+    changeMarge(5, 5, 5, 5);
 }
 
 UI::Text::~Text() {
@@ -78,7 +122,7 @@ UI::Text::~Text() {
 }
 
 UI::Text::Text(std::string const& name, sf::Text text) : Element(name), text(text) {
-    updateSize();
+    changeMarge(5, 5, 5, 5);
 }
 
 void UI::Text::setString (sf::String const& str) {
@@ -100,25 +144,27 @@ void UI::Text::setFont(sf::Font const& font) {
     updateSize();
 }
 
-void UI::Text::show (sf::RenderWindow& window) {
-#if DEBUG > 1
+void UI::Text::show (UI const& ui) {
     auto abs_pos = getAbsolutePosition();
-    sf::RectangleShape box_collider({collision.width, collision.height});
+    auto bounds = text.getLocalBounds();
+#if DEBUG > 1
+    sf::RectangleShape box_collider({size.width, size.height});
     box_collider.setPosition(abs_pos);
     box_collider.setOutlineColor(sf::Color::Red);
     box_collider.setOutlineThickness(2);
-    window.draw(box_collider);
+    ui.draw(box_collider);
+#endif
+
+    abs_pos.x -= bounds.left;
+    abs_pos.y -= bounds.top;
 
     text.setPosition(abs_pos);
-#else
-    text.setPosition(getAbsolutePosition());
-#endif
-    window.draw(text);
+    ui.draw(text);
 }
 
 void UI::Text::updateSize () {
     auto bounds = text.getLocalBounds();
-    changeSize(bounds.width, 50);
+    changeSize(bounds.width, bounds.height);
 }
 
 UI::Panel::Panel(std::string const& name) : Element(name), elems({}) {
@@ -136,13 +182,13 @@ void UI::Panel::push_back(Element* e) {
 
     e->setParent(this);
 
-    e->collision.left = 0;
-    e->collision.top = collision.height;
+    e->position.x = getLeftMarge();
+    e->position.y = size.height - getBottomMarge();
 
-    if (collision.width < e->collision.width)
-        changeSize(e->collision.width, collision.height + e->collision.height);
+    if (size.width < e->size.width)
+        changeSize(e->size.width, size.height - getVerticalMarge() + e->size.height);
     else
-        changeSize(collision.width, collision.height + e->collision.height);
+        changeSize(size.width - getHorizontalMarge(), size.height - getVerticalMarge() + e->size.height);
 }
 
 void UI::Panel::push_front(Element* e) {
@@ -150,53 +196,53 @@ void UI::Panel::push_front(Element* e) {
 }
 
 void UI::Panel::insert(Element* e, size_t pos) {
-    float offset = e->collision.height;
+    float offset = e->size.height;
     auto it = elems.begin() + pos;
 
-    e->collision.left = (*it)->collision.left;
-    e->collision.top = (*it)->collision.top;
+    e->position.x = (*it)->position.x;
+    e->position.y = (*it)->position.y;
 
     for (; it != elems.end(); ++it)
-        (*it)->collision.top += offset;
+        (*it)->position.y += offset;
     elems.insert(elems.begin() + pos, e);
     e->setParent(this);
 
-    if (collision.width < e->collision.width)
-        changeSize(e->collision.width, collision.height + offset);
+    if (size.width < e->size.width)
+        changeSize(e->size.width, size.height - getVerticalMarge() + offset);
     else
-        changeSize(collision.width, collision.height + offset);
+        changeSize(size.width - getHorizontalMarge(), size.height - getVerticalMarge() + offset);
 }
 
 void UI::Panel::removeAt(size_t pos) {
     auto to_remove = (elems.begin() + pos);
-    float offset = (*to_remove)->collision.height;
+    float offset = (*to_remove)->size.height;
     auto it = elems.begin() + pos + 1;
 
     while(it != elems.end()) {
-        (*it)->collision.top -= offset;
+        (*it)->position.y -= offset;
         ++it;
     }
 
     delete *to_remove;
     elems.erase(to_remove);
 
-    if (collision.width == (*to_remove)->collision.width) {
+    if (size.width == (*to_remove)->size.width) {
         float width_max = 0;
         for (auto* e : elems)
-            if (width_max < e->collision.width)
-                width_max = e->collision.width;
+            if (width_max < e->size.width)
+                width_max = e->size.width;
 
-        changeSize(width_max, collision.height - offset);
+        changeSize(width_max, size.height - getVerticalMarge() - offset);
     } else
-        changeSize(collision.width, collision.height - offset);
+        changeSize(size.width - getHorizontalMarge(), size.height - getVerticalMarge() - offset);
 }
 
 bool UI::Panel::manageOnClick(int x, int y) {
     auto abs_pos = getAbsolutePosition();
     if (abs_pos.x > x || 
-        abs_pos.x + collision.width < x ||
+        abs_pos.x + size.width < x ||
         abs_pos.y > y ||
-        abs_pos.y + collision.height < y)
+        abs_pos.y + size.height < y)
         return false;
 
     for (auto* e : elems)
@@ -209,26 +255,26 @@ bool UI::Panel::manageOnClick(int x, int y) {
     return true;
 }
 
-void UI::Panel::show (sf::RenderWindow& window) {
+void UI::Panel::show (UI const& ui) {
 #if DEBUG > 1
-    sf::RectangleShape box_collider({collision.width, collision.height});
+    sf::RectangleShape box_collider({size.width, size.height});
     box_collider.setPosition(getAbsolutePosition());
     box_collider.setOutlineColor(sf::Color::Green);
     box_collider.setOutlineThickness(4);
-    window.draw(box_collider);
+    ui.draw(box_collider);
 #endif
     for (auto* e : elems)
-        e->show(window);
+        e->show(ui);
 }
 
 void UI::Panel::updateSize () {
     float width = 0;
     float height = 0;
     for (auto* e : elems) {
-        if (e->collision.width > width)
-            width = e->collision.width;
-        e->collision.top = height;
-        height += e->collision.height;
+        if (e->size.width > width)
+            width = e->size.width;
+        e->position.y = height + getTopMarge();
+        height += e->size.height;
     }
     changeSize(width, height);
 }
@@ -243,7 +289,13 @@ bool UI::manageOnClick(int x, int y) {
     if (!root)
         return false;
 
-    return root->manageOnClick(x, y);
+    return root->manageOnClick(x, y - scrollDelta);
+}
+
+void UI::manageScroll(float delta) {
+    scrollDelta += delta * UI_SCROLL_FACTOR;
+    if (scrollDelta > 0)
+        scrollDelta = 0;
 }
 
 UI::UI() {
@@ -274,8 +326,27 @@ void UI::resetRoot(UI::Element* elem) {
 }
 
 void UI::show (sf::RenderWindow& window) {
-    if (root)
-        root->show(window);
-    else
+    if (root) {
+        current_window = &window;
+        root->show(*this);
+    } else
         std::cout << "NO ROOT" << std::endl;
+}
+
+void UI::draw (sf::Text& text) const {
+    auto pos = text.getPosition();
+    text.setPosition(pos.x, pos.y + scrollDelta);
+    current_window->draw(text);
+}
+
+void UI::draw (sf::Sprite& sp) const {
+    auto pos = sp.getPosition();
+    sp.setPosition(pos.x, pos.y + scrollDelta);
+    current_window->draw(sp);
+}
+
+void UI::draw (sf::Shape& sh) const {
+    auto pos = sh.getPosition();
+    sh.setPosition(pos.x, pos.y + scrollDelta);
+    current_window->draw(sh);
 }

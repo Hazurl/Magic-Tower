@@ -6,6 +6,10 @@
 #include <iostream>
 #include <cassert>
 
+#include "DebugMacro.h"
+
+#define UI_SCROLL_FACTOR 25;
+
 class UI {
 public:
     class Element {
@@ -13,24 +17,40 @@ public:
         friend UI;
         typedef std::function<void()> onClickFunc;
 
+        typedef sf::Vector2f Position;
+        struct Size { float width, height; };
+        struct Marge { float left, top, right, bottom; };
+
         Element(std::string const& name = "");
         virtual ~Element();
 
         void setOnClick(onClickFunc func);
         virtual bool manageOnClick(int x, int y);
-        virtual void show (sf::RenderWindow& window);
+        virtual void show (UI const& ui);
         std::string getName();
 
+        float getLeftMarge() const;
+        float getTopMarge() const;
+        float getBottomMarge() const;
+        float getRightMarge() const;
+        float getHorizontalMarge() const;
+        float getVerticalMarge() const;
+        
+        void changeMarge (Marge marges);
+        void changeMarge (float left, float top, float right, float bottom);
+
     private:
-        sf::Vector2f getRelativePosition();
-        sf::Vector2f getAbsolutePosition();
+        Position getRelativePosition();
+        Position getAbsolutePosition();
 
         void changeSize (float width, float height);
         virtual void updateSize ();
 
         void setParent(Element* new_parent);
 
-        sf::FloatRect collision;
+        Size size;
+        Position position;
+        Marge marge;
 
         onClickFunc onClick = nullptr;
 
@@ -51,7 +71,7 @@ public:
         void setCharacterSize (unsigned int size);
         void setFont(sf::Font const& font);
 
-        void show (sf::RenderWindow& window);
+        void show (UI const& ui);
 
     private:
         virtual void updateSize ();
@@ -72,7 +92,7 @@ public:
         Element* getElementAt(size_t pos);
 
         bool manageOnClick(int x, int y);
-        void show (sf::RenderWindow& window);
+        void show (UI const& ui);
 
     private:
         virtual void updateSize ();
@@ -84,14 +104,22 @@ public:
     ~UI();
 
     bool manageOnClick(int x, int y);
+    void manageScroll(float delta);
     void show (sf::RenderWindow& window);
 
     void clear();
     void resetRoot(UI::Element* elem);
 
+    void draw (sf::Text& text) const;
+    void draw (sf::Sprite& sp) const;
+    void draw (sf::Shape& sh) const;
 
 private:
     Element* root = nullptr;
+
+    sf::RenderWindow* current_window = nullptr;
+
+    float scrollDelta = 0;
 };
 
 #endif
