@@ -1,12 +1,15 @@
 #include "../Header/Debug.h"
 
 Debug::Debug(Map* map, Player* player, Input* input) : map(map), player(player), input(input), window(sf::VideoMode(400, 800), "Debug", sf::Style::Titlebar | sf::Style::Close) {
+    window.setPosition({1300, 0});
+
     RessourcesLoader::load<sf::Font>("roboto", "Font/Roboto-Regular.ttf");
     rebuild();
 }
 
 Debug::~Debug () {
-
+    if (window.isOpen())
+        window.close();
 }
 
 void Debug::use(Map* map) {

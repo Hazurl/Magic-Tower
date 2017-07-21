@@ -29,7 +29,7 @@ public:
 
 private:
     void manageEvents();
-    void manageUpdates();
+    void manageUpdates(float deltaTime);
     void manageDraw();
 
     sf::RenderWindow window;

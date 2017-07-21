@@ -28,6 +28,7 @@
         "typeinfo": "cpp",
         "cassert": "cpp",
         "unordered_set": "cpp",
-        "functional": "cpp"
+        "functional": "cpp",
+        "string": "cpp"
     }
 }

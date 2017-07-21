@@ -2,6 +2,7 @@
 
 GameEngine::GameEngine() : window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Magic Tower", sf::Style::Titlebar | sf::Style::Close), map(10), player(nullptr) {
     window.setFramerateLimit(WINDOW_FPS);
+    window.setPosition({500, 0});
 }
 
 GameEngine::~GameEngine() {
@@ -15,9 +16,11 @@ int GameEngine::start() {
     debug.use(&inputs);
 #endif
 
+    sf::Clock clock;
+
     while (window.isOpen()) {
         manageEvents();
-        manageUpdates();
+        manageUpdates(clock.restart().asMilliseconds());
         manageDraw();
     }
 
@@ -48,9 +51,10 @@ void GameEngine::manageDraw() {
     window.display();
 }
 
-void GameEngine::manageUpdates() {
+void GameEngine::manageUpdates(float deltaTime) {
 #if DEBUG > 0
     debug.update();
 #endif
     inputs.updateButtonsStates();
+    animation.update(deltaTime);
 }
