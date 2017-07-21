@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
-#include <math.h>
+#include <cmath>
 #include <cassert>
 #include <functional>
 #include <iostream>
@@ -12,8 +12,6 @@
 #include "Hex.h"
 #include "RessourcesLoader.h"
 #include "DebugMacro.h"
-
-#define HEX_HEIGHT_PIXEL 50
 
 class Map {
     GIVE_ACCESS_DEBUG()

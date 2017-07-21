@@ -46,15 +46,14 @@ void GameEngine::manageEvents() {
 void GameEngine::manageDraw() {
     window.clear(sf::Color::White);
 
-    map.draw(window);
+    //map.draw(window);
 
     window.display();
 }
 
-void GameEngine::manageUpdates(float deltaTime) {
+void GameEngine::manageUpdates(float /*deltaTime*/) {
 #if DEBUG > 0
     debug.update();
 #endif
     inputs.updateButtonsStates();
-    animation.update(deltaTime);
 }

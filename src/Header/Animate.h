@@ -9,10 +9,10 @@
 #include <iostream>
 
 class Animate {
-public:
+protected:
     typedef std::function<void(float /*time*/, float /*next_event*/)> Callback;
     Animate();
-    ~Animate();
+    virtual ~Animate();
 
     void update(float deltaTime);
 

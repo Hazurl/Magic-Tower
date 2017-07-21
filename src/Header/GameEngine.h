@@ -17,6 +17,7 @@
 #include "Map.h"
 #include "Player.h"
 #include "Unit.h"
+#include "HexGO.h"
 
 class GameEngine {
     GIVE_ACCESS_DEBUG()

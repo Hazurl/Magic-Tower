@@ -4,7 +4,7 @@ float Map::WIDTH_HEX = sqrt(3) / 2;
 
 Map::Map(unsigned int size) : size(size), hex_sprite(*RessourcesLoader::load<sf::Texture>("hex_sprite", "image/Hex.png")) {
     hex_sprite.setColor(sf::Color(200, 200, 200));
-    float scale = HEX_HEIGHT_PIXEL / static_cast<float>(hex_sprite.getTextureRect().height);
+    float scale = 50 / static_cast<float>(hex_sprite.getTextureRect().height);
     hex_sprite.setScale(scale, scale);
 
     int radius = size - 1;
