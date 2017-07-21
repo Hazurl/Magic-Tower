@@ -19,8 +19,6 @@ class Map {
     GIVE_ACCESS_DEBUG()
 
 public:
-    typedef std::map<long, Hex> map_has_hex;
-
     Map(unsigned int size);
     ~Map();
 
@@ -45,7 +43,7 @@ private:
     unsigned int size;
     
     sf::Sprite hex_sprite;
-    map_has_hex hexs = {};
+    std::map<long, Hex> hexs = {};
     std::unordered_set<long> highlightedHex = {};
 
     static float WIDTH_HEX;

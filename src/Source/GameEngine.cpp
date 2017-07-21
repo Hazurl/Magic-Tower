@@ -1,7 +1,7 @@
 #include "../Header/GameEngine.h"
 
-GameEngine::GameEngine() : window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Magic Tower"), map(10), player(nullptr) {
-
+GameEngine::GameEngine() : window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Magic Tower", sf::Style::Titlebar | sf::Style::Close), map(10), player(nullptr) {
+    window.setFramerateLimit(WINDOW_FPS);
 }
 
 GameEngine::~GameEngine() {
@@ -9,31 +9,16 @@ GameEngine::~GameEngine() {
 }
 
 int GameEngine::start() {
-    Unit unit;
-
-    for (const auto* h : unit.actions[0]->getPossibleCells(map, map.getHexAt(0,3)))
-        map.highlightHex(h);
-
 #if DEBUG > 0
-    Debug debug(&map, &player);
+    debug.use(&map);
+    debug.use(&player);
+    debug.use(&inputs);
 #endif
-    
 
     while (window.isOpen()) {
-        sf::Event event;
-        while (window.pollEvent(event)) {
-            manageEvent(event);
-        }
-
-#if DEBUG > 0
-        debug.update();
-#endif
-
-        window.clear(sf::Color::White);
-
-        map.draw(window);
-
-        window.display();
+        manageEvents();
+        manageUpdates();
+        manageDraw();
     }
 
     RessourcesLoader::clearAll();
@@ -41,12 +26,31 @@ int GameEngine::start() {
     return 0;
 }
 
-void GameEngine::manageEvent (sf::Event const& e) {
-    switch (e.type) {
-    case sf::Event::Closed:
-        window.close();
-    break;
+void GameEngine::manageEvents() {
+    sf::Event e;
+    while (window.pollEvent(e)) {
+        switch (e.type) {
+        case sf::Event::Closed:
+            window.close();
+            break;
 
-    default: break;
+        default: 
+            break;
+        }
     }
+}
+
+void GameEngine::manageDraw() {
+    window.clear(sf::Color::White);
+
+    map.draw(window);
+
+    window.display();
+}
+
+void GameEngine::manageUpdates() {
+#if DEBUG > 0
+    debug.update();
+#endif
+    inputs.updateButtonsStates();
 }
