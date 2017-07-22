@@ -30,5 +30,6 @@
         "unordered_set": "cpp",
         "functional": "cpp",
         "string": "cpp"
-    }
+    },
+    "C_Cpp.intelliSenseEngine": "Default"
 }

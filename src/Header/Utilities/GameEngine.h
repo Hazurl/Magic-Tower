@@ -21,7 +21,6 @@
 
 class GameEngine {
     GIVE_ACCESS_DEBUG()
-
 public:
     GameEngine();
     ~GameEngine();
