@@ -1,6 +1,6 @@
 #include "../../Header/Utilities/GameEngine.h"
 
-GameEngine::GameEngine() : window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Magic Tower", sf::Style::Titlebar | sf::Style::Close), map(10), player(nullptr) {
+GameEngine::GameEngine() : window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Magic Tower", sf::Style::Titlebar | sf::Style::Close), {
     window.setFramerateLimit(WINDOW_FPS);
     window.setPosition({500, 0});
 }

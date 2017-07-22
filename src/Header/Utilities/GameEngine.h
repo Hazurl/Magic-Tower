@@ -35,8 +35,8 @@ private:
 
     sf::RenderWindow window;
 
-    Map map;
-    Player player;
+    GameState gameState;
+    
     Input inputs;
 #if DEBUG > 0
     Debug debug;
