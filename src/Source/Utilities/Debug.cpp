@@ -1,6 +1,6 @@
 #include "../../Header/Utilities/Debug.h"
 
-Debug::Debug(Map* map, Player* player, Input* input) : map(map), player(player), input(input), window(sf::VideoMode(400, 800), "Debug", sf::Style::Titlebar | sf::Style::Close) {
+Debug::Debug(GameState* gameState, Input* input) : gameState(gameState), input(input), window(sf::VideoMode(400, 800), "Debug", sf::Style::Titlebar | sf::Style::Close) {
     window.setPosition({1300, 0});
 
     RessourcesLoader::load<sf::Font>("roboto", "Font/Roboto-Regular.ttf");
@@ -12,13 +12,8 @@ Debug::~Debug () {
         window.close();
 }
 
-void Debug::use(Map* map) {
-    this->map = map;
-    rebuild();
-}
-
-void Debug::use(Player* player) {
-    this->player = player;
+void Debug::use(GameState* gameState) {
+    this->gameState = gameState;
     rebuild();
 }
 
@@ -29,10 +24,8 @@ void Debug::use(Input* input) {
 
 void Debug::rebuild() {
     UI::Panel* menu = new UI::Panel("Menu");
-    if (map)
-        menu->push_back(load(map, "map"));
-    if(player)
-        menu->push_back(load(player, "player"));
+    if(gameState)
+        menu->push_back(load(gameState, "gameState"));
     if(input)
         menu->push_back(load(input, "input"));
 

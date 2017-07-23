@@ -1,6 +1,6 @@
 #include "../../Header/Utilities/GameEngine.h"
 
-GameEngine::GameEngine() : window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Magic Tower", sf::Style::Titlebar | sf::Style::Close), {
+GameEngine::GameEngine() : window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Magic Tower", sf::Style::Titlebar | sf::Style::Close) {
     window.setFramerateLimit(WINDOW_FPS);
     window.setPosition({500, 0});
 }
@@ -11,8 +11,7 @@ GameEngine::~GameEngine() {
 
 int GameEngine::start() {
 #if DEBUG > 0
-    debug.use(&map);
-    debug.use(&player);
+    debug.use(&gameState);
     debug.use(&inputs);
 #endif
 
@@ -30,11 +29,16 @@ int GameEngine::start() {
 }
 
 void GameEngine::manageEvents() {
+    inputs.resetEvents();
     sf::Event e;
     while (window.pollEvent(e)) {
         switch (e.type) {
         case sf::Event::Closed:
             window.close();
+            break;
+
+        case sf::Event::MouseWheelScrolled:
+            inputs.onScrollEvent(e.mouseWheelScroll.delta);
             break;
 
         default: 
@@ -44,9 +48,9 @@ void GameEngine::manageEvents() {
 }
 
 void GameEngine::manageDraw() {
-    window.clear(sf::Color::White);
+    window.clear(sf::Color(50, 50, 50));
 
-    //map.draw(window);
+    gameRenderer.render(window, gameState);
 
     window.display();
 }
@@ -55,5 +59,8 @@ void GameEngine::manageUpdates(float /*deltaTime*/) {
 #if DEBUG > 0
     debug.update();
 #endif
-    inputs.updateButtonsStates();
+    inputs.updateButtonsStates(window);
+
+    auto hexes_raycast = gameRenderer.raycast_hexLayer(inputs.getMouseX(), inputs.getMouseY());
+    gameState.update(inputs, hexes_raycast);
 }

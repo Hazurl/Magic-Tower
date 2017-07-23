@@ -1,10 +1,10 @@
 #ifndef __PLAYER
 #define __PLAYER
 
-#include "../Utilities/DebugMacro.h"
 #include "Hex.h"
+#include "Unit.h"
 
-class Player {
+class Player : public Unit {
     GIVE_ACCESS_DEBUG()
 
 public:
@@ -12,7 +12,7 @@ public:
     ~Player();
 
 private:
-    const Hex* hex;
+
 };
 
 #endif

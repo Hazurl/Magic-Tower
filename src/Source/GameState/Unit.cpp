@@ -1,6 +1,6 @@
 #include "../../Header/GameState/Unit.h"
 
-Unit::Unit() {
+Unit::Unit(const Hex* hex) : hex(hex) {
     actions.emplace_back(new BasicAttack());
 }
 
@@ -9,3 +9,6 @@ Unit::~Unit() {
         delete action;
 }
 
+const Hex* Unit::getHex() const {
+    return hex;
+}

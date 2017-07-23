@@ -6,7 +6,7 @@
 
 class Enemy : public Unit {
 public:
-    Enemy();
+    Enemy(const Hex* hex);
     virtual ~Enemy();
 
 private:

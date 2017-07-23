@@ -8,8 +8,9 @@
 #include <functional>
 #include <iostream>
 #include <unordered_set>
+#include <cstdlib>
 
-#include "Hex.h"
+#include "../GameObject/HexGO.h"
 #include "../Utilities/RessourcesLoader.h"
 #include "../Utilities/DebugMacro.h"
 
@@ -20,31 +21,23 @@ public:
     Map(unsigned int size);
     ~Map();
 
-    void draw(sf::RenderWindow& window);
-
     const Hex* getHexAt(int x, int y) const;
-    void highlightHex (const Hex* hex) const;
 
     std::vector<const Hex*> filterHexs (std::function<bool(const Hex*)> pred) const;
+    std::vector<const HexGO*> getHexes() const;
 
-    int hexDistance(int x0, int y0, int x1, int y1) const;
     int hexDistance(const Hex* hex0, const Hex* hex1) const;
+    bool hexOnSameLine(const Hex* hex0, const Hex* hex1) const;
 
-    void highlightHex (const Hex* hex);
 
 private:
-
-    sf::Vector2f relativePosition(int x, int y);
-
+    
+    int hexDistance(int x0, int y0, int x1, int y1) const;
     long hashCoords(int x, int y) const;
 
     unsigned int size;
     
-    sf::Sprite hex_sprite;
-    std::map<long, Hex> hexs = {};
-    std::unordered_set<long> highlightedHex = {};
-
-    static float WIDTH_HEX;
+    std::map<long, HexGO> hexes = {};
 };
 
 #endif

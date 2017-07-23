@@ -1,0 +1,13 @@
+#ifndef __CONSTANT
+#define __CONSTANT
+
+#define SCREEN_WIDTH 800
+#define SCREEN_HEIGHT 800
+#define WINDOW_FPS 60
+
+#define HEX_HEIGHT_PIXEL 60
+#define UNIT_HEIGHT_PIXEL HEX_HEIGHT_PIXEL * 0.75
+
+#define CAMERA_SCROLL_FACTOR 0.1
+
+#endif

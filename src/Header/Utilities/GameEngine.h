@@ -1,23 +1,18 @@
 #ifndef __GAME_ENGINE
 #define __GAME_ENGINE
 
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 800
-#define WINDOW_FPS 5
-
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <cassert>
 
+#include "Constant.h"
 #include "DebugMacro.h"
 #include "Debug.h"
 #include "RessourcesLoader.h"
 #include "Input.h"
+#include "GameRenderer.h"
 
-#include "../GameState/Map.h"
-#include "../GameState/Player.h"
-#include "../GameState/Unit.h"
-#include "../GameObject/HexGO.h"
+#include "../GameState/GameState.h"
 
 class GameEngine {
     GIVE_ACCESS_DEBUG()
@@ -35,6 +30,7 @@ private:
     sf::RenderWindow window;
 
     GameState gameState;
+    GameRenderer gameRenderer;
     
     Input inputs;
 #if DEBUG > 0

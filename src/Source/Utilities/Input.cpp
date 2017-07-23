@@ -8,12 +8,21 @@ Input::Input() : inputs({
         { Input::Button::Action_1, Input::ButtonState::Up },
         { Input::Button::Action_2, Input::ButtonState::Up },
         { Input::Button::Action_3, Input::ButtonState::Up },
-    }) {
-    updateButtonsStates();
+    }),
+    mouseX(0),
+    mouseY(0) {
 }
 
 Input::~Input() {
 
+}
+
+float Input::getMouseX() const {
+    return mouseX;
+}
+
+float Input::getMouseY() const {
+    return mouseY;
 }
 
 bool Input::isPressed(Input::Button but) const  {
@@ -44,13 +53,21 @@ bool Input::isDown(Input::Button but) const {
     return st == Input::ButtonState::Pressed || st == Input::ButtonState::Down;
 }
 
+float Input::getScroll() const {
+    return scroll;
+}
+
 Input::ButtonState Input::getButtonState(Input::Button but) const {
     assert(inputs.find(but) != inputs.end());
 
     return inputs.at(but);
 }
 
-void Input::updateButtonsStates() {
+void Input::resetEvents() {
+    scroll = 0;
+}
+
+void Input::updateButtonsStates(sf::RenderWindow& window) {
     // Buton::MouseLeft
     changeState(Input::Button::MouseLeft, sf::Mouse::isButtonPressed(sf::Mouse::Left));
     // Buton::MouseRight
@@ -65,6 +82,14 @@ void Input::updateButtonsStates() {
     changeState(Input::Button::Action_2, sf::Keyboard::isKeyPressed(sf::Keyboard::Num2));
     // Buton::Action_3
     changeState(Input::Button::Action_3, sf::Keyboard::isKeyPressed(sf::Keyboard::Num3));
+
+    auto posMouse = sf::Mouse::getPosition(window);
+    mouseX = posMouse.x; 
+    mouseY = posMouse.y; 
+}
+
+void Input::onScrollEvent(float scrollDelta) {
+    scroll += scrollDelta;
 }
 
 void Input::changeState(Button but, bool is_pressed) {
@@ -74,7 +99,7 @@ void Input::changeState(Button but, bool is_pressed) {
         case Input::ButtonState::Down:
         case Input::ButtonState::Pressed:
             if (is_pressed)
-                inputs[but] = Input::ButtonState::Up;
+                inputs[but] = Input::ButtonState::Down;
             else
                 inputs[but] = Input::ButtonState::Released;
             break;
@@ -84,7 +109,7 @@ void Input::changeState(Button but, bool is_pressed) {
             if (is_pressed)
                 inputs[but] = Input::ButtonState::Pressed;
             else
-                inputs[but] = Input::ButtonState::Down;
+                inputs[but] = Input::ButtonState::Up;
             break;
     }
 }
@@ -106,7 +131,7 @@ std::string Input::to_string(Input::Button but) {
         case Input::Button::Action_3 :
             return "Action 3";
         default :
-            assert(("Button not implemented : " + static_cast<int>(but), false));
+            assert(false && ("Button not implemented : " + static_cast<int>(but)));
     }
 }
 
@@ -121,6 +146,6 @@ std::string Input::to_string(Input::ButtonState but_state) {
         case Input::ButtonState::Up :
             return "Up";
         default :
-            assert(("Button state not implemented : " + static_cast<int>(but_state), false));
+            assert(false && ("Button state not implemented : " + static_cast<int>(but_state)));
     }
 }

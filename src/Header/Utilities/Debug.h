@@ -9,9 +9,11 @@
 
 #include "RessourcesLoader.h"
 #include "DebugMacro.h"
+#include "../GameState/GameState.h"
 #include "../GameState/Map.h"
 #include "../GameState/Hex.h"
 #include "../GameState/Player.h"
+#include "../GameState/Camera.h"
 #include "Input.h"
 #include "UI.h"
 
@@ -48,13 +50,12 @@ UI::Element* load(const type* param, std::string const& name) {\
 
 class Debug {
 public:
-    Debug(Map* map = nullptr, Player* player = nullptr, Input* input = nullptr);
+    Debug(GameState* gameState = nullptr, Input* input = nullptr);
     ~Debug();
 
     void rebuild();
 
-    void use (Player* player);
-    void use (Map* map);
+    void use (GameState* gameState);
     void use (Input* input);
     void update();
 
@@ -72,7 +73,11 @@ private:
     DEBUG_RAWTYPE(Input::ButtonState, but, TO_STR_BUTTON)
 #undef TO_STR_BUTTON
 
-    DEBUG_CLASS(Hex, hex, hex->x, hex->y)
+#define TO_STR_HEX_TYPE(t) Hex::to_string(t)
+    DEBUG_RAWTYPE(Hex::Type, type, TO_STR_HEX_TYPE)
+#undef TO_STR_BUTTON
+
+    DEBUG_CLASS(Hex, hex, hex->x, hex->y, hex->type)
 
 #define MAP_DEBUG(panel, pair) \
     panel->push_back(createCollapsablePanel("hash", createText("hash <" + TO_STR_KEY(pair.first) + ">"), [&pair, this] (UI::Panel* sub_pan) {\
@@ -80,7 +85,7 @@ private:
     }))
 
 #define TO_STR_KEY(l) std::to_string(l)
-    typedef std::map<long, Hex> map_hash_hex;
+    typedef std::map<long, HexGO> map_hash_hex;
     DEBUG_CONTAINER(map_hash_hex, map, MAP_DEBUG)
 #undef TO_STR_KEY
 
@@ -90,18 +95,21 @@ private:
 #undef TO_STR_KEY
 #undef MAP_DEBUG
 
-    DEBUG_CLASS(Map, map, map->size, map->hexs)
+    DEBUG_CLASS(Map, map, map->size, map->hexes)
+
+    DEBUG_CLASS(Camera, camera, camera->x, camera->y, camera->zoom)
 
     DEBUG_CLASS(Player, player, *player->hex)
 
-    DEBUG_CLASS(Input, input, input->inputs)
+    DEBUG_CLASS(Input, input, input->inputs, input->mouseX, input->mouseY, input->scroll)
+
+    DEBUG_CLASS(GameState, gameState, gameState->map, *gameState->player, gameState->camera)
 
 
     sf::Text createText(sf::String const& str);
     UI::Panel* createCollapsablePanel(std::string const& name, sf::Text title, std::function<void(UI::Panel*)> onClickFunc);
 
-    Map* map;
-    Player* player;
+    GameState* gameState;
     Input* input;
 
     sf::RenderWindow window;
