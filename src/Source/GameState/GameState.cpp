@@ -1,6 +1,6 @@
 #include "../../Header/GameState/GameState.h"
 
-GameState::GameState() : map(8), player(new PlayerGO(map.getHexAt(1, 2))), enemies({ new EnemyGO(map.getHexAt(0, 3)) }) {
+GameState::GameState() : map(8), player(nullptr), enemies({}), selectedHex(nullptr) {
     
 }
 
@@ -11,9 +11,12 @@ GameState::~GameState() {
     for (auto* e : enemies)
         delete e;
     enemies.clear();
+
+    if (selectedHex)
+        delete selectedHex;
 }
 
-void GameState::update(Input const& inputs, std::vector<const Hex*> const& RC_hexes) {
+void GameState::updateInputs(Input const& inputs, std::vector<const Hex*> const& RC_hexes) {
     if (inputs.isPressed(Input::Button::MouseLeft)) {
         last_mouse_pos = { inputs.getMouseX(), inputs.getMouseY() };
     }
@@ -28,6 +31,15 @@ void GameState::update(Input const& inputs, std::vector<const Hex*> const& RC_he
     if (inputs.getScroll() != 0) {
         camera.moveZoom(inputs.getScroll());
     }
+
+    if (!RC_hexes.empty() && inputs.isRealeased(Input::Button::MouseLeft) && last_mouse_pos == sf::Vector2f({ inputs.getMouseX(), inputs.getMouseY() })) {
+        setSelectedHex(RC_hexes[0]);
+    }
+}
+
+void GameState::updateAnimations (float deltaTime) {
+    if (selectedHex)
+        selectedHex->update(deltaTime);
 }
 
 std::vector<const Hex*> GameState::getHexes() const {
@@ -50,7 +62,20 @@ std::vector<const Unit*> GameState::getUnits() const {
     return std::move(units);
 }
 
+const SelectedHex* GameState::getSelectedHex () const {
+    return selectedHex;
+}
+
 const Camera& GameState::getCamera() const {
     return camera;
 }
 
+
+void GameState::setSelectedHex(const Hex* hex) {
+    if (selectedHex)
+        delete selectedHex;
+    if (hex)
+        selectedHex = new SelectedHex(hex);
+    else
+        selectedHex = nullptr;
+}

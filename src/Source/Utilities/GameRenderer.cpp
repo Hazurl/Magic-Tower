@@ -1,6 +1,10 @@
 #include "../../Header/Utilities/GameRenderer.h"
 
-float GameRenderer::WIDTH_HEX = sqrt(3) / 2;
+float GameRenderer::HEIGHT_HEX_PIXELS = 50;
+float GameRenderer::WIDTH_HEX_PIXELS = GameRenderer::HEIGHT_HEX_PIXELS * sqrt(3) / 2;
+
+float GameRenderer::HEIGHT_UNIT_PIXELS = GameRenderer::HEIGHT_HEX_PIXELS * 0.50f;
+float GameRenderer::WIDTH_UNIT_PIXELS = GameRenderer::HEIGHT_UNIT_PIXELS;
 
 GameRenderer::GameRenderer() {
     RessourcesLoader::load<sf::Texture>("hex_ground", "image/Ground.png");
@@ -35,7 +39,32 @@ void GameRenderer::render (sf::RenderWindow& window, GameState const& gs) {
     clearColliders();
 
     renderHexLayer(window, gs.getHexes(), gs.getCamera());
+    if (gs.getSelectedHex())
+        renderOnHexLayer(window, gs.getSelectedHex(), gs.getCamera());
     renderUnitLayer(window, gs.getUnits(), gs.getCamera());
+}
+
+void GameRenderer::renderOnHexLayer(sf::RenderWindow& window, const SelectedHex* sHex, Camera const& camera) {
+        int thickness = 8;
+        sf::CircleShape hexa(GameRenderer::HEIGHT_HEX_PIXELS * camera.getZoom() / 2 - thickness, 6);
+        hexa.setFillColor(sf::Color::Transparent);
+        hexa.setOutlineColor(sHex->getColor());
+        hexa.setOutlineThickness(thickness);
+
+        // Position sur la map
+        int x_axes = sHex->getHex()->getX();
+        int y_axes = sHex->getHex()->getY();
+
+        // Position relative du centre de la cellule en pixel par rapport au centre de l'ecran
+        auto relativePos = getPositionHexRelativeToOrigin(x_axes, y_axes, camera.getZoom());
+
+        // Origine de l'ecran
+        auto screenOrigin = getScreenOrigin(window.getSize(), camera.getPositionX(), camera.getPositionY());
+
+        hexa.setPosition( relativePos.x - GameRenderer::HEIGHT_HEX_PIXELS / 2.f * camera.getZoom() + screenOrigin.x + thickness, 
+                          relativePos.y - GameRenderer::HEIGHT_HEX_PIXELS / 2.f * camera.getZoom() + screenOrigin.y + thickness);
+
+        window.draw(hexa);
 }
 
 void GameRenderer::renderHexLayer(sf::RenderWindow& window, std::vector<const Hex*> hexes, Camera const& camera) {
@@ -53,7 +82,7 @@ void GameRenderer::renderHexLayer(sf::RenderWindow& window, std::vector<const He
 
         // Creation sprite, assignation texture et taille
         sf::Sprite hex_sp (*texture);
-        float scale = (HEX_HEIGHT_PIXEL * camera.getZoom()) / static_cast<float>(hex_sp.getTextureRect().height);
+        float scale = (GameRenderer::HEIGHT_HEX_PIXELS * camera.getZoom()) / static_cast<float>(hex_sp.getTextureRect().height);
         hex_sp.setScale(scale, scale);
 
         // Taille du sprite
@@ -64,22 +93,19 @@ void GameRenderer::renderHexLayer(sf::RenderWindow& window, std::vector<const He
         int y_axes = hex->getY();
 
         // Position relative du centre de la cellule en pixel par rapport au centre de l'ecran
-        float relative_x = ((x_axes + y_axes / 2.f)) * sprite_rect.width;
-        float relative_y = (y_axes * 0.75) * sprite_rect.height;
+        auto relativePos = getPositionHexRelativeToOrigin(x_axes, y_axes, camera.getZoom());
 
         // Origine de l'ecran
-        auto screen_size = window.getSize();
-        float origin_x = screen_size.x / 2.f + camera.getPositionX();
-        float origin_y = screen_size.y / 2.f + camera.getPositionY();
+        auto screenOrigin = getScreenOrigin(window.getSize(), camera.getPositionX(), camera.getPositionY());
 
-        hex_sp.setPosition( relative_x - sprite_rect.width / 2.f + origin_x, 
-                            relative_y - sprite_rect.height / 2.f + origin_y );
+        hex_sp.setPosition( relativePos.x - sprite_rect.width / 2.f + screenOrigin.x, 
+                            relativePos.y - sprite_rect.height / 2.f + screenOrigin.y );
 
         window.draw(hex_sp);
-        colliders_hexes.push_back(new HexCollider(hex, relative_x + origin_x, 
-                                                       relative_y + origin_y, 
-                                                       sprite_rect.height / 2));
-#if DEFINE > 1
+        colliders_hexes.push_back(new HexCollider(hex, relativePos.x + screenOrigin.x, 
+                                                       relativePos.y + screenOrigin.y, 
+                                                       GameRenderer::HEIGHT_HEX_PIXELS * camera.getZoom() / 2));
+#if DEBUG > 1
         colliders_hexes.back()->draw(window);
 #endif
     }
@@ -96,7 +122,7 @@ void GameRenderer::renderUnitLayer(sf::RenderWindow& window, std::vector<const U
 
         // Creation sprite, assignation texture et taille
         sf::Sprite unit_sp (*texture);
-        float scale = (UNIT_HEIGHT_PIXEL * camera.getZoom()) / static_cast<float>(unit_sp.getTextureRect().height);
+        float scale = (GameRenderer::HEIGHT_UNIT_PIXELS * camera.getZoom()) / static_cast<float>(unit_sp.getTextureRect().height);
         unit_sp.setScale(scale, scale);
 
         // Taille du sprite
@@ -107,24 +133,31 @@ void GameRenderer::renderUnitLayer(sf::RenderWindow& window, std::vector<const U
         int y_axes = unit->getHex()->getY();
 
         // Position relative du centre de la cellule en pixel par rapport au centre de l'ecran
-        float relative_x = ((x_axes + y_axes / 2.f)) * sprite_rect.width;
-        float relative_y = (y_axes * 0.75) * sprite_rect.height;
+        auto relativePos = getPositionHexRelativeToOrigin(x_axes, y_axes, camera.getZoom());
 
         // Origine de l'ecran
-        auto screen_size = window.getSize();
-        float origin_x = screen_size.x / 2.f + camera.getPositionX();
-        float origin_y = screen_size.y / 2.f + camera.getPositionY();
+        auto screenOrigin = getScreenOrigin(window.getSize(), camera.getPositionX(), camera.getPositionY());
 
-        unit_sp.setPosition( relative_x - sprite_rect.width / 2.f + origin_x, 
-                             relative_y - sprite_rect.height / 2.f + origin_y );
+        unit_sp.setPosition( relativePos.x - sprite_rect.width / 2.f + screenOrigin.x, 
+                             relativePos.y - sprite_rect.height / 2.f + screenOrigin.y );
 
         window.draw(unit_sp);
         // TODO 
         /*colliders_units.push_back(new UnitCollider(unit_sp, relative_x + origin_x, 
                                                             relative_y + origin_y, 
                                                             sprite_rect.height * 0.4));*/
-#if DEFINE > 1
+#if DEBUG > 1
         //colliders_hexes.back()->draw(window);
 #endif
     }
+}
+
+sf::Vector2f GameRenderer::getPositionHexRelativeToOrigin (int x, int y, float camera_zoom) {
+    return { (x + y / 2.f) * GameRenderer::WIDTH_HEX_PIXELS  * camera_zoom,
+                (y * 0.75) * GameRenderer::HEIGHT_HEX_PIXELS * camera_zoom };
+}
+
+sf::Vector2f GameRenderer::getScreenOrigin (sf::Vector2u const& screenSize, float camera_x, float camera_y) {
+    return { screenSize.x / 2.f + camera_x,
+             screenSize.y / 2.f + camera_y };
 }

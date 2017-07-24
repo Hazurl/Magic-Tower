@@ -14,6 +14,7 @@
 #include "../GameState/Hex.h"
 #include "../GameState/Player.h"
 #include "../GameState/Camera.h"
+#include "../GameObject/SelectedHex.h"
 #include "Input.h"
 #include "UI.h"
 
@@ -101,9 +102,11 @@ private:
 
     DEBUG_CLASS(Player, player, *player->hex)
 
+    DEBUG_CLASS(SelectedHex, selectedHex, *selectedHex->hex)
+
     DEBUG_CLASS(Input, input, input->inputs, input->mouseX, input->mouseY, input->scroll)
 
-    DEBUG_CLASS(GameState, gameState, gameState->map, *gameState->player, gameState->camera)
+    DEBUG_CLASS(GameState, gameState, gameState->map, *gameState->player, gameState->camera, *gameState->selectedHex)
 
 
     sf::Text createText(sf::String const& str);

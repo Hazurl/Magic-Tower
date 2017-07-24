@@ -29,7 +29,10 @@
         "cassert": "cpp",
         "unordered_set": "cpp",
         "functional": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "cstddef": "cpp",
+        "cstring": "cpp",
+        "memory": "cpp"
     },
     "C_Cpp.intelliSenseEngine": "Default"
 }

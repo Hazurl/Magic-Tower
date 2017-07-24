@@ -55,12 +55,22 @@ void GameEngine::manageDraw() {
     window.display();
 }
 
-void GameEngine::manageUpdates(float /*deltaTime*/) {
+void GameEngine::manageUpdates(float deltaTime) {
 #if DEBUG > 0
     debug.update();
 #endif
     inputs.updateButtonsStates(window);
 
     auto hexes_raycast = gameRenderer.raycast_hexLayer(inputs.getMouseX(), inputs.getMouseY());
-    gameState.update(inputs, hexes_raycast);
+    
+#if DEBUG > 1
+    if (inputs.isDown(Input::Button::Space)) {
+        for (auto* hex : hexes_raycast) {
+            std::cout << "Hex (" << hex->getX() << ", " << hex->getY() << ")" << std::endl;
+        }
+    }
+#endif
+
+    gameState.updateInputs(inputs, hexes_raycast);
+    gameState.updateAnimations(deltaTime);
 }
