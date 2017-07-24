@@ -15,6 +15,7 @@ public:
 
     const Hex* getHex() const;
     sf::Color getColor() const;
+    float getRotation() const;
 
 private:
     const Hex* hex;

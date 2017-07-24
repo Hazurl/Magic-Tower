@@ -45,12 +45,25 @@ void GameRenderer::render (sf::RenderWindow& window, GameState const& gs) {
 }
 
 void GameRenderer::renderOnHexLayer(sf::RenderWindow& window, const SelectedHex* sHex, Camera const& camera) {
-        int thickness = 8;
-        sf::CircleShape hexa(GameRenderer::HEIGHT_HEX_PIXELS * camera.getZoom() / 2 - thickness, 6);
-        hexa.setFillColor(sf::Color::Transparent);
-        hexa.setOutlineColor(sHex->getColor());
-        hexa.setOutlineThickness(thickness);
+        float thickness = 2 * camera.getZoom();
+        float radius = GameRenderer::HEIGHT_HEX_PIXELS * camera.getZoom() / 2.f;
 
+        sf::CircleShape hexa1(radius * 0.75f, 6);
+        hexa1.setOrigin(radius * 0.75f, radius * 0.75f);;
+
+        hexa1.setFillColor(sf::Color::Transparent);
+        hexa1.setOutlineColor(sHex->getColor());
+        hexa1.setOutlineThickness(thickness);
+        hexa1.setRotation(sHex->getRotation());
+
+        sf::CircleShape hexa2(radius * 0.50f, 6);
+        hexa2.setOrigin(radius * 0.50f, radius * 0.50f);;
+
+        hexa2.setFillColor(sf::Color::Transparent);
+        hexa2.setOutlineColor(sHex->getColor());
+        hexa2.setOutlineThickness(thickness);
+        hexa2.setRotation(-sHex->getRotation());
+        
         // Position sur la map
         int x_axes = sHex->getHex()->getX();
         int y_axes = sHex->getHex()->getY();
@@ -61,10 +74,14 @@ void GameRenderer::renderOnHexLayer(sf::RenderWindow& window, const SelectedHex*
         // Origine de l'ecran
         auto screenOrigin = getScreenOrigin(window.getSize(), camera.getPositionX(), camera.getPositionY());
 
-        hexa.setPosition( relativePos.x - GameRenderer::HEIGHT_HEX_PIXELS / 2.f * camera.getZoom() + screenOrigin.x + thickness, 
-                          relativePos.y - GameRenderer::HEIGHT_HEX_PIXELS / 2.f * camera.getZoom() + screenOrigin.y + thickness);
+        hexa1.setPosition( relativePos.x + screenOrigin.x, 
+                           relativePos.y + screenOrigin.y);
 
-        window.draw(hexa);
+        window.draw(hexa1);
+        hexa2.setPosition( relativePos.x + screenOrigin.x, 
+                           relativePos.y + screenOrigin.y);
+
+        window.draw(hexa2);
 }
 
 void GameRenderer::renderHexLayer(sf::RenderWindow& window, std::vector<const Hex*> hexes, Camera const& camera) {
@@ -154,7 +171,7 @@ void GameRenderer::renderUnitLayer(sf::RenderWindow& window, std::vector<const U
 
 sf::Vector2f GameRenderer::getPositionHexRelativeToOrigin (int x, int y, float camera_zoom) {
     return { (x + y / 2.f) * GameRenderer::WIDTH_HEX_PIXELS  * camera_zoom,
-                (y * 0.75) * GameRenderer::HEIGHT_HEX_PIXELS * camera_zoom };
+               (y * 0.75f) * GameRenderer::HEIGHT_HEX_PIXELS * camera_zoom };
 }
 
 sf::Vector2f GameRenderer::getScreenOrigin (sf::Vector2u const& screenSize, float camera_x, float camera_y) {
