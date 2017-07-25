@@ -1,4 +1,4 @@
-SRC_DIR := src/Source/Collider src/Source/Utilities src/Source/GameState src/Source/Interface src/Source/Action src/Source/GameObject src
+SRC_DIR := src/Collider src/Utilities src/GameState src/Interface src/Action src/GameObject src
 
 SRC := $(foreach d,$(SRC_DIR),$(wildcard $(d)/*.cpp))
 
@@ -11,6 +11,7 @@ OBJ := $(patsubst %.cpp,build/%.o,$(SRC))
 OPTIM := -O2
 FLAGS := -std=c++17 -g3 -Wall -Wextra -Wno-pmf-conversions
 LIBS := -lsfml-graphics -lsfml-window -lsfml-system
+INCLUDE := -I ./include
 MAKEFLAGS += --no-print-directory
 
 all: $(DEST)
@@ -19,7 +20,7 @@ all: $(DEST)
 # Compile each file and link them
 $(DEST): $(BUILD_DIR) $(OBJ)
 	@echo "\033[32m\033[1m :: Linking of all objects\033[0m"
-	@g++ $(FLAGS) $(OBJ) -o $(DEST) $(LIBS)
+	@g++ $(INCLUDE) $(FLAGS) $(OBJ) -o $(DEST) $(LIBS)
 	@echo -n "\033[34m"
 	@echo "---------------"
 	@echo "Build finished!"
@@ -29,7 +30,7 @@ $(DEST): $(BUILD_DIR) $(OBJ)
 # compile a file into a object
 build/%.o: %.cpp
 	@echo "\033[1m :: Building" "$<" "\033[0m"
-	@g++ -c $(OPTIM) $(FLAGS) -o "$@" "$<"
+	@g++ -c $(INCLUDE) $(OPTIM) $(FLAGS) -o "$@" "$<"
 
 #make build folders
 $(BUILD_DIR):
