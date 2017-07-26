@@ -88,3 +88,25 @@ std::vector<const HexGO*> Map::getHexes() const {
 
     return std::move(vec_hexes);
 }
+
+std::vector<const Hex*> Map::getNeighboursOf(const Hex* hex) const {
+    int x = hex->getX();
+    int y = hex->getY();
+    
+    auto it_NW = hexes.find(hashCoords(x, y - 1));
+    auto it_SE = hexes.find(hashCoords(x, y + 1));
+    auto it_NE = hexes.find(hashCoords(x + 1, y - 1));
+    auto it_SW = hexes.find(hashCoords(x - 1, y + 1));
+    auto it_W = hexes.find(hashCoords(x - 1, y));
+    auto it_E = hexes.find(hashCoords(x + 1, y));
+
+    std::vector<const Hex*> neighbours = {};
+    if (it_NW != hexes.end()) neighbours.push_back(&it_NW->second);
+    if (it_SE != hexes.end()) neighbours.push_back(&it_SE->second);
+    if (it_NE != hexes.end()) neighbours.push_back(&it_NE->second);
+    if (it_SW != hexes.end()) neighbours.push_back(&it_SW->second);
+    if (it_W != hexes.end()) neighbours.push_back(&it_W->second);
+    if (it_E != hexes.end()) neighbours.push_back(&it_E->second);
+
+    return std::move(neighbours);
+}

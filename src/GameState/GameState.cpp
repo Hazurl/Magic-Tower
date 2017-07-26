@@ -1,7 +1,16 @@
 #include <GameState/GameState.h>
 
 GameState::GameState() : map(8), player(nullptr), enemies({}), selectedHex(nullptr) {
-    
+    PathFinding pathF(&map);
+
+    std::vector<const Hex*> path = {};
+    if (pathF.getPath(map.getHexAt(0, 0), map.getHexAt(5, -5), path)) {
+        std::cout << "Path : " << std::endl;
+        for (const Hex* hex : path) {
+            std::cout << "Hex (" << hex->getX() << ", " << hex->getY() << ")" << std::endl;
+        }
+    }
+    else std::cout << "No path" << std::endl;
 }
 
 GameState::~GameState() {
@@ -39,7 +48,7 @@ void GameState::updateInputs(Input const& inputs, std::vector<const Hex*> const&
 
 void GameState::updateAnimations (float deltaTime) {
     if (selectedHex)
-        selectedHex->update(deltaTime);
+        selectedHex->updateAnimations(deltaTime);
 }
 
 std::vector<const Hex*> GameState::getHexes() const {

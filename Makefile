@@ -64,3 +64,6 @@ run: $(DEST)
 again:
 	@make clean
 	@make $(DEST)
+
+debug:
+	@echo $(SRC_DIR)

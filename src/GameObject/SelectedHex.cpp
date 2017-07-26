@@ -1,15 +1,14 @@
 #include <GameObject/SelectedHex.h>
 
-SelectedHex::SelectedHex(const Hex* hex) : hex(hex), color_up(true) {
-    createAnimation("color");
-    setRepeated("color", true, 2000);
-    setSpeed("color", 0.1);
-    createEvent("color", 0, [this] (float, float, float) { this->color_up = false; });
-    createEvent("color", 1000, [this] (float, float, float) { this->color_up = true; });
+SelectedHex::SelectedHex(const Hex* hex) : hex(hex), colorAnim(Animation<ColorState>(ColorState::Appear)), rotateAnim(Animation<RotateState>(RotateState::Rotate)) {
+    colorAnim.addState(ColorState::Visible);
+    colorAnim.addTransitionsFrom(ColorState::Appear, {
+        { ColorState::Visible, new Triggers::EventElapsedTimePassed(2000) }
+    });
 
-    createAnimation("rotation");
-    setRepeated("rotation", true, 5000);
-    createEvent("rotation", 0);
+    rotateAnim.addTransitionsFrom(RotateState::Rotate, {
+        { RotateState::Rotate, new Triggers::EventElapsedTimePassed(2000) } 
+    });
 }
 
 SelectedHex::~SelectedHex() {
@@ -21,16 +20,20 @@ const Hex* SelectedHex::getHex() const {
 }
 
 sf::Color SelectedHex::getColor() const {
-    float progress = getProgress("color");
-    int alpha = static_cast<int>(progress * 256);
-    assert(alpha >= 0 && alpha <= 255);
+    if (colorAnim.getState() == ColorState::Appear) {
+        int alpha = static_cast<int>(colorAnim.getProgress() * 255);
+        assert(alpha >= 0 && alpha <= 255);
 
-    if (color_up)
         return sf::Color(200, 0, 100, alpha);
-    else
-        return sf::Color(200, 0, 100, 255 - alpha);
+    }
+    return sf::Color(200, 0, 100, 255);
 }
 
 float SelectedHex::getRotation() const {
-    return getProgress("rotation") * 360;
+    return rotateAnim.getProgress() * 360;
+}
+
+void SelectedHex::updateAnimations(float deltaTime) {
+    colorAnim.update(deltaTime);
+    rotateAnim.update(deltaTime);
 }

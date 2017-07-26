@@ -9,6 +9,7 @@
 #include <GameObject/EnemyGO.h>
 #include <Utilities/DebugMacro.h>
 #include <Utilities/Input.h>
+#include <Utilities/Pathfinding.h>
 
 class GameState {
     GIVE_ACCESS_DEBUG()
