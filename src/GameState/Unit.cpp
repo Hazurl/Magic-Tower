@@ -12,3 +12,10 @@ Unit::~Unit() {
 const Hex* Unit::getHex() const {
     return hex;
 }
+
+std::vector<const Hex*> Unit::getPossibleActionHexes(Map const& map, unsigned int action) const {
+    if (action >= actions.size())
+        return {};
+
+    return actions[action]->getPossibleHexes(map, hex);
+}

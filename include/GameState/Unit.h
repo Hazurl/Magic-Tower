@@ -14,6 +14,7 @@ public:
     virtual ~Unit();
 
     const Hex* getHex() const;
+    std::vector<const Hex*> getPossibleActionHexes(Map const& map, unsigned int action) const;
 
 private:
     int movement_point = 1;

@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <cassert>
+#include <iostream>
 
 #include <Utilities/DebugMacro.h>
 
@@ -11,7 +12,7 @@ class Input {
 
 public:
     enum class Button {
-        MouseLeft,
+        MouseLeft = 42,
         MouseRight,
         Space,
         Escape,
@@ -32,6 +33,7 @@ public:
 
     float getMouseX() const;
     float getMouseY() const;
+    sf::Vector2f getMousePosition() const;
     bool isPressed(Button but) const;
     bool isRealeased(Button but) const;
     bool isUp(Button but) const;

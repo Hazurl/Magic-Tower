@@ -71,6 +71,6 @@ void GameEngine::manageUpdates(float deltaTime) {
     }
 #endif
 
-    gameState.updateInputs(inputs, hexes_raycast);
+    gameState.updateInputs({ inputs, hexes_raycast, {} });
     gameState.updateAnimations(deltaTime);
 }

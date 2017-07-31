@@ -9,7 +9,7 @@ public:
     Action();
     virtual ~Action();
 
-    virtual std::vector<const Hex*> getPossibleCells(Map const& map, const Hex* caster_cell) = 0;
+    virtual std::vector<const Hex*> getPossibleHexes(Map const& map, const Hex* caster_cell) = 0;
 
 private:
     int cooldown = 0;
@@ -29,7 +29,7 @@ public:
     BasicAttack();
     virtual ~BasicAttack();
 
-    std::vector<const Hex*> getPossibleCells(Map const& map, const Hex* caster_cell);
+    std::vector<const Hex*> getPossibleHexes(Map const& map, const Hex* caster_cell);
 
 private:
     Type type = Type::BASIC;

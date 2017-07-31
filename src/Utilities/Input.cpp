@@ -25,6 +25,10 @@ float Input::getMouseY() const {
     return mouseY;
 }
 
+sf::Vector2f Input::getMousePosition() const {
+    return { mouseX, mouseY };
+}
+
 bool Input::isPressed(Input::Button but) const  {
     assert(inputs.find(but) != inputs.end());
 

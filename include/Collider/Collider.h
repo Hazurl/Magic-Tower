@@ -2,6 +2,7 @@
 #define __COLLIDER
 
 #include <SFML/Graphics.hpp>
+#include <GameState/Camera.h>
 
 class Collider {
 public:
@@ -9,7 +10,7 @@ public:
     virtual ~Collider();
 
     virtual bool isColliding(float x, float y) = 0;
-    virtual void draw(sf::RenderWindow& window) = 0;
+    virtual void draw(sf::RenderWindow& window, Camera const& camera) = 0;
 private:
 
 };

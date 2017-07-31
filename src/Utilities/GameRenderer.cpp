@@ -3,7 +3,7 @@
 float GameRenderer::HEIGHT_HEX_PIXELS = 50;
 float GameRenderer::WIDTH_HEX_PIXELS = GameRenderer::HEIGHT_HEX_PIXELS * sqrt(3) / 2;
 
-float GameRenderer::HEIGHT_UNIT_PIXELS = GameRenderer::HEIGHT_HEX_PIXELS * 0.50f;
+float GameRenderer::HEIGHT_UNIT_PIXELS = GameRenderer::HEIGHT_HEX_PIXELS * 0.75f;
 float GameRenderer::WIDTH_UNIT_PIXELS = GameRenderer::HEIGHT_UNIT_PIXELS;
 
 GameRenderer::GameRenderer() {
@@ -34,158 +34,144 @@ std::vector<const Hex*> GameRenderer::raycast_hexLayer(float x, float y) {
         if (collider->isColliding(x, y))
             hexes.push_back(collider->hex);
     }
-    return std::move(hexes);
+    return hexes;
 }
 
 void GameRenderer::render (sf::RenderWindow& window, GameState const& gs) {
     clearColliders();
 
-    renderHexLayer(window, gs.getHexes(), gs.getCamera());
+    this->camera = &gs.getCamera();
+    this->window = &window;
+
+    auto screenSize = window.getSize();
+    origin = { screenSize.x / 2.f + camera->getPositionX(), screenSize.y / 2.f + camera->getPositionY() };
+
+    renderHexLayer(gs.getHexes());
+    renderActionHexes(gs.getPossibleActionHexes());
     if (gs.getSelectedHex())
-        renderOnHexLayer(window, gs.getSelectedHex(), gs.getCamera());
-    renderUnitLayer(window, gs.getUnits(), gs.getCamera());
+        renderSelectedHex(gs.getSelectedHex());
+    renderUnitLayer(gs.getUnits());
 }
 
-void GameRenderer::renderOnHexLayer(sf::RenderWindow& window, const SelectedHex* sHex, Camera const& camera) {
-        float thickness = 2 * camera.getZoom();
-        float radius = GameRenderer::HEIGHT_HEX_PIXELS * camera.getZoom() / 2.f;
-
-        sf::CircleShape hexa1(radius * 0.75f, 6);
-        hexa1.setOrigin(radius * 0.75f, radius * 0.75f);;
-
-        hexa1.setFillColor(sf::Color::Transparent);
-        hexa1.setOutlineColor(sHex->getColor());
-        hexa1.setOutlineThickness(thickness);
-        hexa1.setRotation(sHex->getRotation());
-
-        sf::CircleShape hexa2(radius * 0.50f, 6);
-        hexa2.setOrigin(radius * 0.50f, radius * 0.50f);;
-
-        hexa2.setFillColor(sf::Color::Transparent);
-        hexa2.setOutlineColor(sHex->getColor());
-        hexa2.setOutlineThickness(thickness);
-        hexa2.setRotation(-sHex->getRotation());
-        
-        // Position sur la map
-        int x_axes = sHex->getHex()->getX();
-        int y_axes = sHex->getHex()->getY();
-
-        // Position relative du centre de la cellule en pixel par rapport au centre de l'ecran
-        auto relativePos = getPositionHexRelativeToOrigin(x_axes, y_axes, camera.getZoom());
-
-        // Origine de l'ecran
-        auto screenOrigin = getScreenOrigin(window.getSize(), camera.getPositionX(), camera.getPositionY());
-
-        hexa1.setPosition( relativePos.x + screenOrigin.x, 
-                           relativePos.y + screenOrigin.y);
-
-        window.draw(hexa1);
-        hexa2.setPosition( relativePos.x + screenOrigin.x, 
-                           relativePos.y + screenOrigin.y);
-
-        window.draw(hexa2);
+void GameRenderer::renderActionHexes(std::vector<const Hex*> hexes) {
+    for (const Hex* hex : hexes) {
+        window->draw( createHexShape(hex->getX(), hex->getY(), 2, 1, sf::Color::Black) );
+    }
 }
 
-void GameRenderer::renderHexLayer(sf::RenderWindow& window, std::vector<const Hex*> hexes, Camera const& camera) {
+void GameRenderer::renderSelectedHex(const SelectedHex* sHex) {
+    auto hexa1 = createHexShape(sHex->getHex()->getX(), sHex->getHex()->getY(), 2, 0.75, sHex->getColor());
+    auto hexa2 = createHexShape(sHex->getHex()->getX(), sHex->getHex()->getY(), 2, 0.50, sHex->getColor());
+
+    hexa1.setRotation(sHex->getRotation());
+    hexa2.setRotation(-sHex->getRotation());
+
+    window->draw(hexa1);
+    window->draw(hexa2);
+}
+
+void GameRenderer::renderHexLayer(std::vector<const Hex*> hexes) {
     for (auto* hex : hexes) {
-        //Texture
-        const sf::Texture* texture;
-        if (hex->getType() == Hex::Type::Ground)
-            texture = RessourcesLoader::get<sf::Texture>("hex_ground");
-        else if (hex->getType() == Hex::Type::Lava)
-            texture = RessourcesLoader::get<sf::Texture>("hex_lava");
-        else if (hex->getType() == Hex::Type::Wall)
-            texture = RessourcesLoader::get<sf::Texture>("hex_wall");
-        else
-            assert(false && ("No Texture for this hex type : " + static_cast<int>(hex->getType())));
+        sf::Sprite sp = createSprite(hex->getX(), hex->getY(), getHexTexture(hex->getType()));
+        window->draw(sp);
+        colliders_hexes.push_back(new HexCollider(hex, sp.getPosition().x, sp.getPosition().y, GameRenderer::HEIGHT_HEX_PIXELS / 2 * camera->getZoom()));
 
-        // Creation sprite, assignation texture et taille
-        sf::Sprite hex_sp (*texture);
-        float scale = (GameRenderer::HEIGHT_HEX_PIXELS * camera.getZoom()) / static_cast<float>(hex_sp.getTextureRect().height);
-        hex_sp.setScale(scale, scale);
+        sf::Text coordsText = createText(getHexPosition(hex->getX(), hex->getY()), std::string("(") + std::to_string(hex->getX()) + ", " + std::to_string(hex->getY()) + ")", "roboto", sf::Color::Blue, 10);
+        window->draw(coordsText);
 
-        // Taille du sprite
-        auto sprite_rect = hex_sp.getGlobalBounds();
-
-        // Position sur la map
-        int x_axis = hex->getX();
-        int y_axis = hex->getY();
-
-        // Position relative du centre de la cellule en pixel par rapport au centre de l'ecran
-        auto relativePos = getPositionHexRelativeToOrigin(x_axis, y_axis, camera.getZoom());
-
-        // Origine de l'ecran
-        auto screenOrigin = getScreenOrigin(window.getSize(), camera.getPositionX(), camera.getPositionY());
-
-        hex_sp.setPosition( relativePos.x - sprite_rect.width / 2.f + screenOrigin.x, 
-                            relativePos.y - sprite_rect.height / 2.f + screenOrigin.y );
-
-        window.draw(hex_sp);
-        colliders_hexes.push_back(new HexCollider(hex, relativePos.x + screenOrigin.x, 
-                                                       relativePos.y + screenOrigin.y, 
-                                                       GameRenderer::HEIGHT_HEX_PIXELS * camera.getZoom() / 2));
-
-
-        sf::Text coordsText(std::string("(") + std::to_string(x_axis) + ", " + std::to_string(y_axis) + ")", *RessourcesLoader::get<sf::Font>("roboto"));
-        coordsText.setColor(sf::Color::Blue);
-        coordsText.setCharacterSize(10 * camera.getZoom());
-        auto boundsText = coordsText.getLocalBounds();
-        coordsText.setOrigin(boundsText.width / 2, boundsText.height / 2);
-        coordsText.setPosition(relativePos.x + screenOrigin.x,  relativePos.y + screenOrigin.y );
-        window.draw(coordsText);
 #if DEBUG > 1
-        colliders_hexes.back()->draw(window);
+        colliders_hexes.back()->draw(*window, *camera);
 #endif
     }
 }
 
-void GameRenderer::renderUnitLayer(sf::RenderWindow& window, std::vector<const Unit*> units, Camera const& camera) {
+void GameRenderer::renderUnitLayer(std::vector<const Unit*> units) {
     for (auto* unit : units) {
-        //Texture
-        const sf::Texture* texture;
-        if (dynamic_cast<const Player*>(unit))
-            texture = RessourcesLoader::get<sf::Texture>("unit_player");
-        else
-            texture = RessourcesLoader::get<sf::Texture>("unit_enemy");
-
-        // Creation sprite, assignation texture et taille
-        sf::Sprite unit_sp (*texture);
-        float scale = (GameRenderer::HEIGHT_UNIT_PIXELS * camera.getZoom()) / static_cast<float>(unit_sp.getTextureRect().height);
-        unit_sp.setScale(scale, scale);
-
-        // Taille du sprite
-        auto sprite_rect = unit_sp.getGlobalBounds();
-
-        // Position sur la map
-        int x_axes = unit->getHex()->getX();
-        int y_axes = unit->getHex()->getY();
-
-        // Position relative du centre de la cellule en pixel par rapport au centre de l'ecran
-        auto relativePos = getPositionHexRelativeToOrigin(x_axes, y_axes, camera.getZoom());
-
-        // Origine de l'ecran
-        auto screenOrigin = getScreenOrigin(window.getSize(), camera.getPositionX(), camera.getPositionY());
-
-        unit_sp.setPosition( relativePos.x - sprite_rect.width / 2.f + screenOrigin.x, 
-                             relativePos.y - sprite_rect.height / 2.f + screenOrigin.y );
-
-        window.draw(unit_sp);
+        auto sp = createSprite(unit->getHex()->getX(), unit->getHex()->getY(), getUnitTexture(dynamic_cast<const Player*>(unit) != nullptr), GameRenderer::HEIGHT_UNIT_PIXELS);
+        window->draw(sp);
         // TODO 
         /*colliders_units.push_back(new UnitCollider(unit_sp, relative_x + origin_x, 
                                                             relative_y + origin_y, 
                                                             sprite_rect.height * 0.4));*/
 #if DEBUG > 1
-        //colliders_hexes.back()->draw(window);
+        //colliders_hexes.back()->draw(window, *camera);
 #endif
     }
 }
 
-sf::Vector2f GameRenderer::getPositionHexRelativeToOrigin (int x, int y, float camera_zoom) {
-    return { (x + y / 2.f) * GameRenderer::WIDTH_HEX_PIXELS  * camera_zoom,
-               (y * 0.75f) * GameRenderer::HEIGHT_HEX_PIXELS * camera_zoom };
+sf::Vector2f GameRenderer::getPositionHexRelativeToOrigin (int x, int y) {
+    return { (x + y / 2.f) * GameRenderer::WIDTH_HEX_PIXELS  * camera->getZoom(),
+               (y * 0.75f) * GameRenderer::HEIGHT_HEX_PIXELS * camera->getZoom() };
 }
 
-sf::Vector2f GameRenderer::getScreenOrigin (sf::Vector2u const& screenSize, float camera_x, float camera_y) {
-    return { screenSize.x / 2.f + camera_x,
-             screenSize.y / 2.f + camera_y };
+sf::Vector2f GameRenderer::getScreenOrigin () {
+    return origin;
+}
+
+sf::Vector2f GameRenderer::getHexPosition (int x, int y) {
+    return getPositionHexRelativeToOrigin(x, y) + getScreenOrigin();
+}
+
+sf::CircleShape GameRenderer::createHexShape (int x, int y, float thickness, float size, sf::Color boundsColor) {
+    float screenThick = thickness * camera->getZoom();
+    float radius = GameRenderer::HEIGHT_HEX_PIXELS * camera->getZoom() / 2.f * size;
+
+    sf::CircleShape hexa(radius, 6);
+    hexa.setOrigin(radius, radius);
+
+    hexa.setFillColor(sf::Color::Transparent);
+    hexa.setOutlineColor(boundsColor);
+    hexa.setOutlineThickness(screenThick);
+
+    hexa.setPosition( getPositionHexRelativeToOrigin(x, y) + getScreenOrigin() );
+
+    return hexa;
+}
+
+const sf::Texture& GameRenderer::getHexTexture(Hex::Type type) {
+    if (type == Hex::Type::Ground)
+        return *RessourcesLoader::get<sf::Texture>("hex_ground");
+    else if (type == Hex::Type::Lava)
+        return *RessourcesLoader::get<sf::Texture>("hex_lava");
+    else if (type == Hex::Type::Wall)
+        return *RessourcesLoader::get<sf::Texture>("hex_wall");
+
+    assert(false);
+}
+
+sf::Sprite GameRenderer::createSprite(int x, int y, sf::Texture const& texture, float heightPixels) {
+    sf::Sprite sp (texture);
+    auto rect = sp.getTextureRect();
+    float scale = (heightPixels * camera->getZoom()) / static_cast<float>(rect.height);
+    sp.setScale(scale, scale);
+    sp.setOrigin(rect.width / 2, rect.height / 2);
+    sp.setPosition( getPositionHexRelativeToOrigin(x, y) + getScreenOrigin() );
+
+    return sp;    
+}
+
+const sf::Texture& GameRenderer::getUnitTexture(bool is_player) {
+    if (is_player)
+        return *RessourcesLoader::get<sf::Texture>("unit_player");
+    else
+        return *RessourcesLoader::get<sf::Texture>("unit_enemy");
+
+    assert(false);
+}
+
+inline sf::Text GameRenderer::createText(sf::Vector2f const& pos, sf::String const& str, std::string const& font, sf::Color const& color, unsigned int size, bool proportional_to_zoom) {
+    return createText(pos.x, pos.y, str, font, color, size, proportional_to_zoom);
+}
+
+sf::Text GameRenderer::createText(float screenX, float screenY, sf::String const& str, std::string const& font, sf::Color const& color, unsigned int size, bool proportional_to_zoom) {
+    sf::Text text(str, *RessourcesLoader::get<sf::Font>(font));
+    text.setColor(color);
+    if (proportional_to_zoom)
+        size *= camera->getZoom();
+    text.setCharacterSize(size);
+    auto boundsText = text.getLocalBounds();
+    text.setOrigin(boundsText.width / 2, boundsText.height / 2);
+    text.setPosition(screenX, screenY);
+
+    return text;
 }

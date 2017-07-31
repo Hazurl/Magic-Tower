@@ -10,19 +10,22 @@
 
 class HexCollider : public Collider {
 public:
-    HexCollider(const Hex* hex, float x, float y, float size);
+    HexCollider(const Hex* hex, float x, float y, float radius);
+    HexCollider(const Hex* hex, sf::Vector2f const& pos, float radius);
     ~HexCollider();
 
     bool isColliding(float x, float y);
-    void draw (sf::RenderWindow& window);
+    void draw (sf::RenderWindow& window, Camera const& camera);
 
     const Hex* const hex;
 
 private:
-    float x, y, height, width;
+    float x, y; // position on screen in pixels
+    float radius; // radius
+    float half_height, width; // ...
 
-    static float WIDTH_HEX;
-    
+    static float WIDTH_FACTOR;
+   
 };
 
 #endif

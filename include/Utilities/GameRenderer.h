@@ -31,12 +31,22 @@ public:
     void render (sf::RenderWindow& window, GameState const& gs);
 
 private:
-    void renderHexLayer(sf::RenderWindow& window, std::vector<const Hex*> hexes, Camera const& camera);
-    void renderOnHexLayer(sf::RenderWindow& window, const SelectedHex* sHex, Camera const& camera);
-    void renderUnitLayer(sf::RenderWindow& window, std::vector<const Unit*> units, Camera const& camera);
+    void renderHexLayer(std::vector<const Hex*> hexes);
+    void renderActionHexes(std::vector<const Hex*> hexes);
+    void renderSelectedHex(const SelectedHex* sHex);
+    void renderUnitLayer(std::vector<const Unit*> units);
 
-    sf::Vector2f getPositionHexRelativeToOrigin (int x, int y, float camera_zoom);
-    sf::Vector2f getScreenOrigin (sf::Vector2u const& screenSize, float camera_x, float camera_y);
+    sf::Vector2f getPositionHexRelativeToOrigin (int x, int y);
+    sf::Vector2f getScreenOrigin();
+    sf::Vector2f getHexPosition(int x, int y);
+
+    sf::CircleShape createHexShape(int x, int y, float thickness, float size, sf::Color boundsColor);
+    sf::Sprite createSprite(int x, int y, sf::Texture const& texture, float heightPixels = GameRenderer::HEIGHT_HEX_PIXELS);
+    sf::Text createText(sf::Vector2f const& pos, sf::String const& str, std::string const& font, sf::Color const& color, unsigned int size, bool proportional_to_zoom = true);
+    sf::Text createText(float screenX, float screenY, sf::String const& str, std::string const& font, sf::Color const& color, unsigned int size, bool proportional_to_zoom = true);
+
+    const sf::Texture& getHexTexture(Hex::Type type);
+    const sf::Texture& getUnitTexture(bool is_player);
 
     std::vector<HexCollider*> colliders_hexes;
     //std::vector<UnitCollider*> colliders_unit;
@@ -46,6 +56,10 @@ private:
 
     static float HEIGHT_UNIT_PIXELS;
     static float WIDTH_UNIT_PIXELS;
+
+    sf::RenderWindow* window = nullptr;
+    const Camera* camera = nullptr;
+    sf::Vector2f origin;
 
 };
 

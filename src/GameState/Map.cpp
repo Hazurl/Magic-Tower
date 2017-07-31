@@ -1,7 +1,7 @@
 #include <GameState/Map.h>
 
 Map::Map(unsigned int size) : size(size) {
-    int radius = size - 1;
+    int radius = size;
     for (int x = -radius; x <= radius; ++x) {
         for (int y = -radius; y <= radius; ++y) {
             if (hexDistance(x, y, 0, 0) >= radius)
