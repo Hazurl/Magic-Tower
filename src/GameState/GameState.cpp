@@ -2,15 +2,25 @@
 
 GameState::GameState() : map(8), player(nullptr), enemies({}), selectedHex(nullptr) {
     PathFinding pathF(&map);
+    int i = 0;
+    const Hex* start = map.getHexAt(2, 0);
+    while (!Hex::walkable(start) && i < 10)
+        start = map.getHexAt(2, i++);
+    const Hex* end = map.getHexAt(-2, 0);
+    while (!Hex::walkable(end) && i < 10)
+        end = map.getHexAt(-2, i++);
 
-    std::vector<const Hex*> path = {};
-    if (pathF.getPath(map.getHexAt(0, 0), map.getHexAt(5, -5), path)) {
-        std::cout << "Path : " << std::endl;
-        for (const Hex* hex : path) {
-            std::cout << "Hex (" << hex->getX() << ", " << hex->getY() << ")" << std::endl;
+    if (Hex::walkable(start) && Hex::walkable(end)) {
+        if (pathF.getPath(start, end, path)) {
+            std::cout << "Path : " << std::endl;
+            for (const Hex* hex : path) {
+                std::cout << "Hex (" << hex->getX() << ", " << hex->getY() << ")" << std::endl;
+            }
         }
+        else std::cout << "No path Between : (" << start->getX() << ", " << start->getY() << ") and (" << end->getX() << ", " << end->getY() << ")" << std::endl;
+    } else {
+        std::cout << "Cannot find good position" << std::endl;
     }
-    else std::cout << "No path" << std::endl;
 }
 
 GameState::~GameState() {

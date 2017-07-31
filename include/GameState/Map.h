@@ -26,6 +26,7 @@ public:
     std::vector<const Hex*> filterHexs (std::function<bool(const Hex*)> pred) const;
     std::vector<const HexGO*> getHexes() const;
     std::vector<const Hex*> getNeighboursOf(const Hex* hex) const;
+    std::vector<const Hex*> getNeighboursWalkablesOf(const Hex* hex) const;
 
     int hexDistance(const Hex* hex0, const Hex* hex1) const;
     bool hexOnSameLine(const Hex* hex0, const Hex* hex1) const;

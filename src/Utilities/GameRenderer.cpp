@@ -13,6 +13,8 @@ GameRenderer::GameRenderer() {
 
     RessourcesLoader::load<sf::Texture>("unit_player", "image/hat.png");
     RessourcesLoader::load<sf::Texture>("unit_enemy", "image/warrior.png");
+
+    RessourcesLoader::load<sf::Font>("roboto", "Font/Roboto-Regular.ttf");
 }
 
 GameRenderer::~GameRenderer() {
@@ -106,11 +108,11 @@ void GameRenderer::renderHexLayer(sf::RenderWindow& window, std::vector<const He
         auto sprite_rect = hex_sp.getGlobalBounds();
 
         // Position sur la map
-        int x_axes = hex->getX();
-        int y_axes = hex->getY();
+        int x_axis = hex->getX();
+        int y_axis = hex->getY();
 
         // Position relative du centre de la cellule en pixel par rapport au centre de l'ecran
-        auto relativePos = getPositionHexRelativeToOrigin(x_axes, y_axes, camera.getZoom());
+        auto relativePos = getPositionHexRelativeToOrigin(x_axis, y_axis, camera.getZoom());
 
         // Origine de l'ecran
         auto screenOrigin = getScreenOrigin(window.getSize(), camera.getPositionX(), camera.getPositionY());
@@ -122,6 +124,15 @@ void GameRenderer::renderHexLayer(sf::RenderWindow& window, std::vector<const He
         colliders_hexes.push_back(new HexCollider(hex, relativePos.x + screenOrigin.x, 
                                                        relativePos.y + screenOrigin.y, 
                                                        GameRenderer::HEIGHT_HEX_PIXELS * camera.getZoom() / 2));
+
+
+        sf::Text coordsText(std::string("(") + std::to_string(x_axis) + ", " + std::to_string(y_axis) + ")", *RessourcesLoader::get<sf::Font>("roboto"));
+        coordsText.setColor(sf::Color::Blue);
+        coordsText.setCharacterSize(10 * camera.getZoom());
+        auto boundsText = coordsText.getLocalBounds();
+        coordsText.setOrigin(boundsText.width / 2, boundsText.height / 2);
+        coordsText.setPosition(relativePos.x + screenOrigin.x,  relativePos.y + screenOrigin.y );
+        window.draw(coordsText);
 #if DEBUG > 1
         colliders_hexes.back()->draw(window);
 #endif

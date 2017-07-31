@@ -36,6 +36,10 @@ private:
 
     void setSelectedHex(const Hex* hex);
     SelectedHex* selectedHex = nullptr;
+
+    std::vector<const Hex*> path = {};
+    std::vector<PathFinding::Cell> closed_list = {};
+    std::set<PathFinding::Cell, PathFinding::CellsComparator> open_list = {};
 };
 
 #endif

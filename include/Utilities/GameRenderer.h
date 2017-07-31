@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <cassert>
+#include <string>
 
 #include <Utilities/Constant.h>
 #include <Utilities/RessourcesLoader.h>

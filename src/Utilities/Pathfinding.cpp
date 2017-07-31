@@ -8,61 +8,111 @@ PathFinding::~PathFinding() {
 
 }
 
-PathFinding::Cell PathFinding::hexToCell(const Hex* hex) const {
-    assert(hex == nullptr);
-    return PathFinding::Cell(hex->getX(), hex->getY());
-}
-
-const Hex* PathFinding::cellToHex(PathFinding::PathFinding::Cell const& cell) const {
-    return map->getHexAt(cell.x, cell.y);
-}
-
-std::vector<PathFinding::PathFinding::Cell> PathFinding::getNeighbours(PathFinding::PathFinding::Cell const& cell) const {
-    std::vector<PathFinding::Cell> neighbours = {};
-
-    for(const Hex* hex : map->getNeighboursOf(cellToHex(cell)))
-        neighbours.emplace_back(hex->getX(), hex->getY());
-
-    return std::move(neighbours);
-}
-
-
 bool PathFinding::getPath(const Hex* start, const Hex* end, std::vector<const Hex*>& result) const {
     result.clear();
 
     if (start == nullptr || end == nullptr)
         return false;
 
-    const PathFinding::Cell startCell (start->getX(), start->getY());
-    const PathFinding::Cell endCell (end->getX(), end->getY());
+    if (*start == *end) {
+        result = {start};
+        return true;
+    }
 
-    std::vector<PathFinding::Cell> closed_list = {};
-    std::set<PathFinding::Cell, CellsComparator> open_list = {};
+    std::set<Cell, CellsComparator> open = {};
+    std::set<const Hex*> closed = {};
 
-    open_list.insert(startCell);
+    std::map<long, const Hex*> parent = {};
 
-    while (!open_list.empty()) {
-        PathFinding::Cell current = *open_list.begin();
-        open_list.erase(open_list.begin());
+    Cell start_cell(start);
+    start_cell.heuristic = map->hexDistance(start, end);
 
-        if (current == endCell) {
-            for (PathFinding::Cell& c : closed_list)
-                result.push_back(cellToHex(c));
+    std::cout << "Add to open list : " << *start << " (size : ";
+    open.insert(start_cell);
+    std::cout << open.size() << ")" << std::endl;
+
+    if (open.find(start_cell) != open.end()) {
+        std::cout << "FOUND !" << std::endl;
+    } else {
+        std::cout << "not found" << std::endl;
+    }
+
+    start_cell.cost = 42;
+
+    std::cout << open.begin()->cost << std::endl;
+
+    if (open.find(start_cell) != open.end()) {
+        std::cout << "FOUND !" << std::endl;
+    } else {
+        std::cout << "not found" << std::endl;
+    }
+/*
+    while (!open.empty()) {
+        Cell cur = *open.begin();
+        std::cout << "Remove from open list : " << *cur.hex << " (size : ";
+        open.erase(open.begin());
+        std::cout << open.size() << ")" << std::endl;
+
+        std::cout << "Visited : " << *cur.hex << std::endl;
+        std::cout << "Add to closed list : " << *cur.hex << " (size : ";
+        closed.insert(Hex::hash(*cur.hex));
+        std::cout << closed.size() << ")" << std::endl;
+
+        if (*cur.hex == *end) {
+            const Hex* current = start;
+
+            int pos = 0;
+
+            do {
+                result.push_back(start);
+                pos++;
+                current = parent[Hex::hash(*current)];
+            } while (current != nullptr && *current != *end);
+
+            if (current == nullptr) {
+                std::cout << "# ERROR : " << pos << std::endl;
+                return false;
+            }
+
+            result.push_back(end);
 
             return true;
         }
-        for (PathFinding::Cell& n : getNeighbours(current)) {
-            auto it_closed = std::find(closed_list.begin(), closed_list.end(), n);
-            auto it_open = std::find(open_list.begin(), open_list.end(), n);
 
-            if ((it_closed == closed_list.end() || it_closed->cost >= current.cost) && (it_open == open_list.end() || it_open->cost >= current.cost)) {
-                n.cost = current.cost + 1;
-                n.heuristic = n.cost + map->hexDistance(cellToHex(n), end);
-                open_list.insert(n);
+        for (const Hex* neighbour : map->getNeighboursWalkablesOf(cur.hex)) {
+            std::cout << "\tneighbour : " << *neighbour << std::endl;
+            if (closed.find(Hex::hash(*neighbour)) != closed.end()) {
+                std::cout << "\tAlready visited and evaluated !" << std::endl;
+                continue;
+            }
+
+            auto it_open = open.find(Cell(neighbour));
+            int new_cost = cur.cost + map->hexDistance(cur.hex, neighbour);
+
+            std::cout << "\t\tnew_cost : " << new_cost << std::endl;
+            if (it_open == open.end())
+                std::cout << "\t\tNot in open list" << std::endl;
+            else
+                std::cout << "\t\tPrevious cost : " << it_open->cost << std::endl;
+            if (it_open == open.end() || new_cost < it_open->cost) {
+                Cell cell(neighbour);
+                cell.cost = new_cost;
+                cell.heuristic = map->hexDistance(neighbour, end);
+                std::cout << "\t\tCell : " << *neighbour << ", Cost : " << new_cost << ", Heuristic : " << cell.heuristic << std::endl;
+
+                if (it_open != open.end())
+                    open.erase(it_open);
+
+                std::cout << "\t\tAdd to open list : " << *neighbour << " (size : ";
+                open.insert(cell);
+                std::cout << open.size() << ")" << std::endl;
+
+                std::cout << "\t\tAdd Parent (" << Hex::hash(*neighbour) << " : " << *cur.hex << ")" << std::endl;
+                parent[Hex::hash(*neighbour)] = cur.hex;
             }
         }
-        closed_list.push_back(current);
-    }
+    }*/
+
     return false;
 }
 

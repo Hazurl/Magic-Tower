@@ -32,3 +32,12 @@ std::string Hex::to_string(Hex::Type type) {
             return "undefined";
     }
 }
+
+bool Hex::walkable(const Hex* hex) {
+    return hex != nullptr && hex->getType() == Hex::Type::Ground;
+}
+
+std::ostream& operator<< (std::ostream& os, Hex const& hex) {
+    os << "(" << hex.x << ", " << hex.y << ")";
+    return os;
+}
