@@ -47,7 +47,7 @@ inline const sf::Font* RessourcesLoader::load(std::string const& name, std::stri
 }
 template<>
 inline const sf::Texture* RessourcesLoader::load(std::string const& name, std::string const& filename) {
-    if (font_map.find(filename) == font_map.end()) {
+    if (texture_map.find(filename) == texture_map.end()) {
         sf::Texture* texture = new sf::Texture();
         texture->loadFromFile(filename);
         return texture_map[name] = texture;

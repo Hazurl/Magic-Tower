@@ -4,7 +4,7 @@
 #include <ctime>
 
 int main (int , char** ) {
-    srand(0);
+    srand(time(NULL));
     GameEngine game;
     return game.start();
 }

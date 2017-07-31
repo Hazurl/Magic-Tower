@@ -3,10 +3,10 @@
 GameState::GameState() : map(8), player(nullptr), enemies({}), selectedHex(nullptr) {
     PathFinding pathF(&map);
     int i = 0;
-    const Hex* start = map.getHexAt(2, 0);
+    const Hex* start = map.getHexAt(5, 0);
     while (!Hex::walkable(start) && i < 10)
         start = map.getHexAt(2, i++);
-    const Hex* end = map.getHexAt(-2, 0);
+    const Hex* end = map.getHexAt(3, 0);
     while (!Hex::walkable(end) && i < 10)
         end = map.getHexAt(-2, i++);
 
