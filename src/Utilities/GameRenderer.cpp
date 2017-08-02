@@ -48,8 +48,13 @@ void GameRenderer::render (sf::RenderWindow& window, GameState const& gs) {
 
     renderHexLayer(gs.getHexes());
     renderActionHexes(gs.getPossibleActionHexes());
+    renderReachableHexes(gs.getReachableHexes());
+    renderPath(gs.getLowPath(), true);
+    renderPath(gs.getHighPath(), false);
+
     if (gs.getSelectedHex())
         renderSelectedHex(gs.getSelectedHex());
+        
     renderUnitLayer(gs.getUnits());
 }
 
@@ -59,15 +64,38 @@ void GameRenderer::renderActionHexes(std::vector<const Hex*> hexes) {
     }
 }
 
+void GameRenderer::renderReachableHexes(std::vector<const Hex*> hexes) {
+    for (const Hex* hex : hexes) {
+        window->draw( createHexShape(hex->getX(), hex->getY(), 2, 1, sf::Color::Blue) );
+    }
+}
+
+void GameRenderer::renderPath(std::vector<const Hex*> hexes, bool is_accessible) {
+    if (hexes.empty())
+        return;
+
+    sf::Color color = sf::Color::Red;
+    color.a = (is_accessible ? 255 : 100);
+
+
+    const Hex* prev = hexes[0];
+    for (unsigned int i = 1; i < hexes.size(); ++i) {
+        const Hex* cur = hexes[i];
+
+        drawLine(getHexPosition(prev->getX(), prev->getY()), getHexPosition(cur->getX(), cur->getY()), 20, color);
+        prev = cur;
+    }
+}
+
 void GameRenderer::renderSelectedHex(const SelectedHex* sHex) {
-    auto hexa1 = createHexShape(sHex->getHex()->getX(), sHex->getHex()->getY(), 2, 0.75, sHex->getColor());
+    /*auto hexa1 = createHexShape(sHex->getHex()->getX(), sHex->getHex()->getY(), 2, 0.75, sHex->getColor());
     auto hexa2 = createHexShape(sHex->getHex()->getX(), sHex->getHex()->getY(), 2, 0.50, sHex->getColor());
 
     hexa1.setRotation(sHex->getRotation());
     hexa2.setRotation(-sHex->getRotation());
 
     window->draw(hexa1);
-    window->draw(hexa2);
+    window->draw(hexa2);*/
 }
 
 void GameRenderer::renderHexLayer(std::vector<const Hex*> hexes) {
@@ -174,4 +202,24 @@ sf::Text GameRenderer::createText(float screenX, float screenY, sf::String const
     text.setPosition(screenX, screenY);
 
     return text;
+}
+
+void GameRenderer::drawLine(sf::Vector2f const& begin, sf::Vector2f const& end, float thickness, sf::Color const& color) {
+    sf::Vertex vertices[4];
+
+    sf::Vector2f dir = begin - end;
+    sf::Vector2f unit_dir = dir / std::sqrt(dir.x * dir.x + dir.y * dir.y);
+    sf::Vector2f unit_perp(- unit_dir.y, unit_dir.x);
+
+    sf::Vector2f offset = ( thickness / 2.f ) * unit_perp;
+
+    vertices[0].position = begin + offset;
+    vertices[1].position = end + offset;
+    vertices[2].position = end - offset;
+    vertices[3].position = begin - offset;
+
+    for (int i = 0; i < 4; ++i)
+        vertices[i].color = color;
+
+    window->draw(vertices, 4, sf::Quads);
 }

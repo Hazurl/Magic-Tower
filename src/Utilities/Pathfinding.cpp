@@ -1,20 +1,13 @@
 #include <Utilities/Pathfinding.h>
 
-PathFinding::PathFinding (const Map* map) : map(map) {
-    assert(map != nullptr);
-}
-
-PathFinding::~PathFinding() {
-
-}
-
-bool PathFinding::getPath(const Hex* start, const Hex* end, std::vector<const Hex*>& result) const {
+bool PathFinding::find(Map const& map, const Hex* start, const Hex* end, std::vector<const Hex*>& result) {
     result.clear();
 
     if (start == nullptr || end == nullptr)
         return false;
 
     if (*start == *end) {
+        result = { start };
         return true;
     }
 
@@ -23,7 +16,7 @@ bool PathFinding::getPath(const Hex* start, const Hex* end, std::vector<const He
 
     std::map<const Hex*, const Hex*> parent = {};
 
-    open.insert({ start, {map->hexDistance(start, end), 0}});
+    open.insert({ start, {map.hexDistance(start, end), 0}});
 
     while (!open.empty()) {
         auto pair = std::min_element(open.begin(), open.end(), [] (const std::pair<const Hex*, Weight>& p0, const std::pair<const Hex*, Weight>& p1) -> bool  {
@@ -50,15 +43,15 @@ bool PathFinding::getPath(const Hex* start, const Hex* end, std::vector<const He
             return true;
         }
 
-        for (const Hex* neighbour : map->getNeighboursWalkablesOf(cur)) {
+        for (const Hex* neighbour : map.getNeighboursWalkablesOf(cur)) {
             if (closed.find(neighbour) != closed.end())
                 continue;
 
             auto it_open = open.find(neighbour);
-            int new_cost = weight.cost + map->hexDistance(cur, neighbour);
+            int new_cost = weight.cost + map.hexDistance(cur, neighbour);
 
             if (it_open == open.end() || new_cost < it_open->second.cost) {
-                PathFinding::Weight new_weight = { map->hexDistance(neighbour, end), new_cost };
+                PathFinding::Weight new_weight = { map.hexDistance(neighbour, end), new_cost };
 
                 if (it_open != open.end())
                     open.erase(it_open);

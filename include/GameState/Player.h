@@ -11,8 +11,10 @@ public:
     Player(const Hex* hex);
     ~Player();
 
-private:
+    int getMP() const;
 
+private:
+    int movePoints;
 };
 
 #endif

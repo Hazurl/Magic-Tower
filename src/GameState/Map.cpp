@@ -72,7 +72,7 @@ long Map::hashCoords(int x, int y) const {
     return (static_cast<long>(x) << 32) + y;
 }
 
-std::vector<const Hex*> Map::filterHexs (std::function<bool(const Hex*)> pred) const {
+std::vector<const Hex*> Map::filterHexes (std::function<bool(const Hex*)> pred) const {
     std::vector<const Hex*> filteredHex = {};
     for (auto& p : hexes) {
         if (pred(&p.second))

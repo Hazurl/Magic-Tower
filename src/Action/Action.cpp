@@ -21,7 +21,7 @@ BasicAttack::~BasicAttack() {
 }
 
 std::vector<const Hex*> BasicAttack::getPossibleHexes(Map const& map, const Hex* caster_cell) {
-    auto hexes = map.filterHexs([&] (const Hex* hex) {
+    auto hexes = map.filterHexes([&] (const Hex* hex) {
         auto d = map.hexDistance(caster_cell, hex);
         return d > min_distance && d <= max_distance && (type != Type::INLINE || map.hexOnSameLine(caster_cell, hex));
     });

@@ -13,6 +13,10 @@ const Hex* Unit::getHex() const {
     return hex;
 }
 
+void Unit::setHex(const Hex* h) {
+    hex = h;
+}
+
 std::vector<const Hex*> Unit::getPossibleActionHexes(Map const& map, unsigned int action) const {
     if (action >= actions.size())
         return {};

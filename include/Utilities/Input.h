@@ -35,7 +35,7 @@ public:
     float getMouseY() const;
     sf::Vector2f getMousePosition() const;
     bool isPressed(Button but) const;
-    bool isRealeased(Button but) const;
+    bool isReleased(Button but) const;
     bool isUp(Button but) const;
     bool isDown(Button but) const;
     float getScroll() const;

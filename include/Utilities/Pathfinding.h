@@ -15,13 +15,7 @@ private:
         int heuristic, cost;
     };
 public:
-    PathFinding(const Map* map);
-    ~PathFinding();
-
-    bool getPath(const Hex* start, const Hex* end, std::vector<const Hex*>& result) const;
-
-private:
-    const Map* map = nullptr;
+    static bool find(Map const& map, const Hex* start, const Hex* end, std::vector<const Hex*>& result);
 };
 
 #endif

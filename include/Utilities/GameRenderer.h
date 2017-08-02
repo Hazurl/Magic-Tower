@@ -33,6 +33,8 @@ public:
 private:
     void renderHexLayer(std::vector<const Hex*> hexes);
     void renderActionHexes(std::vector<const Hex*> hexes);
+    void renderReachableHexes(std::vector<const Hex*> hexes);
+    void renderPath(std::vector<const Hex*> hexes, bool is_accessible);
     void renderSelectedHex(const SelectedHex* sHex);
     void renderUnitLayer(std::vector<const Unit*> units);
 
@@ -44,6 +46,8 @@ private:
     sf::Sprite createSprite(int x, int y, sf::Texture const& texture, float heightPixels = GameRenderer::HEIGHT_HEX_PIXELS);
     sf::Text createText(sf::Vector2f const& pos, sf::String const& str, std::string const& font, sf::Color const& color, unsigned int size, bool proportional_to_zoom = true);
     sf::Text createText(float screenX, float screenY, sf::String const& str, std::string const& font, sf::Color const& color, unsigned int size, bool proportional_to_zoom = true);
+
+    void drawLine(sf::Vector2f const& begin, sf::Vector2f const& end, float thickness, sf::Color const& color);
 
     const sf::Texture& getHexTexture(Hex::Type type);
     const sf::Texture& getUnitTexture(bool is_player);

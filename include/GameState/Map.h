@@ -23,7 +23,7 @@ public:
 
     const Hex* getHexAt(int x, int y) const;
 
-    std::vector<const Hex*> filterHexs (std::function<bool(const Hex*)> pred) const;
+    std::vector<const Hex*> filterHexes (std::function<bool(const Hex*)> pred) const;
     std::vector<const HexGO*> getHexes() const;
     std::vector<const Hex*> getNeighboursOf(const Hex* hex) const;
     std::vector<const Hex*> getNeighboursWalkablesOf(const Hex* hex) const;

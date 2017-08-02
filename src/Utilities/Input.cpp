@@ -35,7 +35,7 @@ bool Input::isPressed(Input::Button but) const  {
     return inputs.at(but) == Input::ButtonState::Pressed;
 }
 
-bool Input::isRealeased(Input::Button but) const {
+bool Input::isReleased(Input::Button but) const {
     assert(inputs.find(but) != inputs.end());
 
     return inputs.at(but) == Input::ButtonState::Released;

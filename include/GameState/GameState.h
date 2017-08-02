@@ -16,9 +16,12 @@ class GameState {
     GIVE_ACCESS_DEBUG()
 
     enum class State {
-        PlayerTurn, Action_1, Action_2, Action_3, Move, EnemiesTurn
+        PlayerTurn, Action_1, Action_2, Action_3, Move, EnemiesTurn//, Wait
     };
-    
+/* IDEA ?
+    function<bool(void)> waiting_until = nullptr;
+    State next;
+*/
 public:
     struct UpdateInfo {
         const Input inputs;
@@ -37,13 +40,16 @@ public:
     std::vector<const Unit*> getUnits() const;
     const SelectedHex* getSelectedHex () const;
     std::vector<const Hex*> getPossibleActionHexes() const;
+    std::vector<const Hex*> getReachableHexes() const;
+    std::vector<const Hex*> getLowPath() const;
+    std::vector<const Hex*> getHighPath() const;
     const Camera& getCamera() const;
 
 private:
     Map map;
     PlayerGO* player;
     std::vector<Enemy*> enemies = {};
-    State state = State::PlayerTurn;
+    State state;
 
     Camera camera;
     sf::Vector2f last_mouse_pos;
@@ -54,6 +60,7 @@ private:
 
     std::vector<const Hex*> path = {};
     std::vector<const Hex*> actionHexes = {};
+    std::vector<const Hex*> reachableHexes = {};
 
     void updatePlayerTurn(UpdateInfo const& infos);
 };
