@@ -10,6 +10,7 @@ public:
     virtual ~Action();
 
     virtual std::vector<const Hex*> getPossibleHexes(Map const& map, const Hex* caster_cell) = 0;
+    virtual void execute(Map const& map, const Hex* hex) = 0;
 
 private:
     int cooldown = 0;
@@ -30,7 +31,8 @@ public:
     virtual ~BasicAttack();
 
     std::vector<const Hex*> getPossibleHexes(Map const& map, const Hex* caster_cell);
-
+    void execute(Map const& map, const Hex* hex);
+    
 private:
     Type type = Type::BASIC;
     Area area = Area::POINT;

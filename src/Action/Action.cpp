@@ -27,3 +27,7 @@ std::vector<const Hex*> BasicAttack::getPossibleHexes(Map const& map, const Hex*
     });
     return std::move(hexes);
 }
+
+void BasicAttack::execute(Map const& map, const Hex* hex) {
+    std::cout << "Attack : " << hex << std::endl;
+}

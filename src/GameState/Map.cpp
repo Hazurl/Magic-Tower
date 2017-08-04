@@ -1,26 +1,7 @@
 #include <GameState/Map.h>
 
 Map::Map(unsigned int size) : size(size) {
-    int radius = size;
-    for (int x = -radius; x <= radius; ++x) {
-        for (int y = -radius; y <= radius; ++y) {
-            if (hexDistance(x, y, 0, 0) >= radius)
-                continue;
-            
-            int rand_type = rand() % 100;
-            Hex::Type type;
-
-            if (rand_type < 60)
-                type = Hex::Type::Ground;
-            else if (rand_type < 85)
-                type = Hex::Type::Lava;
-            else
-                type = Hex::Type::Wall;
-
-            HexGO hex(x, y, type);
-            hexes.emplace( hashCoords(x, y), hex );
-        }
-    }
+    generatePropagation();
 }
 
 Map::~Map() {
@@ -67,6 +48,12 @@ const Hex* Map::getHexAt(int x, int y) const {
     return &hexes.at(hash);
 }
 
+Hex* Map::getHexAt(int x, int y) {
+    long hash = hashCoords(x, y);
+    if (hexes.find(hash) == hexes.end())
+        return nullptr;
+    return &hexes.at(hash);
+}
 
 long Map::hashCoords(int x, int y) const {
     return (static_cast<long>(x) << 32) + y;
@@ -111,6 +98,28 @@ std::vector<const Hex*> Map::getNeighboursOf(const Hex* hex) const {
     return std::move(neighbours);
 }
 
+std::vector<Hex*> Map::getNeighboursOf(const Hex* hex) {
+    int x = hex->getX();
+    int y = hex->getY();
+    
+    auto it_NW = hexes.find(hashCoords(x, y - 1));
+    auto it_SE = hexes.find(hashCoords(x, y + 1));
+    auto it_NE = hexes.find(hashCoords(x + 1, y - 1));
+    auto it_SW = hexes.find(hashCoords(x - 1, y + 1));
+    auto it_W = hexes.find(hashCoords(x - 1, y));
+    auto it_E = hexes.find(hashCoords(x + 1, y));
+
+    std::vector<Hex*> neighbours = {};
+    if (it_NW != hexes.end()) neighbours.push_back(&it_NW->second);
+    if (it_SE != hexes.end()) neighbours.push_back(&it_SE->second);
+    if (it_NE != hexes.end()) neighbours.push_back(&it_NE->second);
+    if (it_SW != hexes.end()) neighbours.push_back(&it_SW->second);
+    if (it_W != hexes.end()) neighbours.push_back(&it_W->second);
+    if (it_E != hexes.end()) neighbours.push_back(&it_E->second);
+
+    return std::move(neighbours);
+}
+
 std::vector<const Hex*> Map::getNeighboursWalkablesOf(const Hex* hex) const {
     int x = hex->getX();
     int y = hex->getY();
@@ -131,4 +140,78 @@ std::vector<const Hex*> Map::getNeighboursWalkablesOf(const Hex* hex) const {
     if (it_E != hexes.end() && Hex::walkable(&it_E->second)) neighbours.push_back(&it_E->second);
 
     return std::move(neighbours);
+}
+
+void Map::generateRandom() {
+    int radius = size;
+    for (int x = -radius; x <= radius; ++x) {
+        for (int y = -radius; y <= radius; ++y) {
+            if (hexDistance(x, y, 0, 0) >= radius)
+                continue;
+            
+            int rand_type = rand() % 100;
+            Hex::Type type;
+
+            if (rand_type < 60)
+                type = Hex::Type::Ground;
+            else if (rand_type < 85)
+                type = Hex::Type::Lava;
+            else
+                type = Hex::Type::Wall;
+
+            HexGO hex(x, y, type);
+            hexes.emplace( hashCoords(x, y), hex );
+        }
+    }
+}
+
+void Map::generatePropagation() {
+    int hex_start_x = static_cast<int>(rand() % std::min(size, (unsigned int)4));
+    int hex_start_y = static_cast<int>(rand() % std::min(size, (unsigned int)4));
+
+    int radius = size;
+    for (int x = -radius; x <= radius; ++x) {
+        for (int y = -radius; y <= radius; ++y) {
+            if (hexDistance(x, y, 0, 0) >= radius)
+                continue;
+
+            HexGO hex(x, y, Hex::Type::Unknown);
+            hexes.emplace( hashCoords(x, y), hex );
+        }
+    }
+
+    std::vector<Hex*> to_build { getHexAt(hex_start_x, hex_start_y) };
+    unsigned int pos = 0;
+
+    while(pos < to_build.size()) {
+        Hex* cur = to_build[pos];
+        // set cur Type
+        int distance = hexDistance(hex_start_x, hex_start_y, cur->getX(), cur->getY());
+        double ratio = distance / static_cast<double>(size);
+        int rand_type = rand() % 100;
+
+        /*
+            Ground -> 90% to 50%
+            Wall -> 10% to 20%
+            Lava -> 0% to 30%
+        */
+
+        int prob_ground = (90 - static_cast<int>(ratio * 40.0));
+        int prob_wall = prob_ground + (10 + static_cast<int>(ratio * 10.0));
+
+        if (rand_type < prob_ground)
+            cur->setType(Hex::Type::Ground);
+        else if (rand_type < prob_wall)
+            cur->setType(Hex::Type::Wall);
+        else
+            cur->setType(Hex::Type::Lava);
+
+        // Add Neighbours at the end
+        for (auto* n : getNeighboursOf(cur))
+            if (n->getType() == Hex::Type::Unknown)
+                to_build.push_back(n);
+
+        // Advance Cur
+        ++pos;
+    }
 }

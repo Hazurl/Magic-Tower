@@ -6,9 +6,9 @@
 #include <cmath>
 #include <cassert>
 #include <functional>
-#include <iostream>
 #include <unordered_set>
 #include <cstdlib>
+#include <algorithm>
 
 #include <GameObject/HexGO.h>
 #include <Utilities/RessourcesLoader.h>
@@ -22,14 +22,19 @@ public:
     ~Map();
 
     const Hex* getHexAt(int x, int y) const;
+    Hex* getHexAt(int x, int y);
 
     std::vector<const Hex*> filterHexes (std::function<bool(const Hex*)> pred) const;
     std::vector<const HexGO*> getHexes() const;
     std::vector<const Hex*> getNeighboursOf(const Hex* hex) const;
+    std::vector<Hex*> getNeighboursOf(const Hex* hex);
     std::vector<const Hex*> getNeighboursWalkablesOf(const Hex* hex) const;
 
     int hexDistance(const Hex* hex0, const Hex* hex1) const;
     bool hexOnSameLine(const Hex* hex0, const Hex* hex1) const;
+
+    void generateRandom();
+    void generatePropagation();
 
 private:
     

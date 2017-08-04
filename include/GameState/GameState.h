@@ -15,13 +15,6 @@
 class GameState {
     GIVE_ACCESS_DEBUG()
 
-    enum class State {
-        PlayerTurn, Action_1, Action_2, Action_3, Move, EnemiesTurn//, Wait
-    };
-/* IDEA ?
-    function<bool(void)> waiting_until = nullptr;
-    State next;
-*/
 public:
     struct UpdateInfo {
         const Input inputs;
@@ -49,7 +42,6 @@ private:
     Map map;
     PlayerGO* player;
     std::vector<Enemy*> enemies = {};
-    State state;
 
     Camera camera;
     sf::Vector2f last_mouse_pos;
@@ -58,11 +50,34 @@ private:
     void setSelectedHex(const Hex* hex);
     SelectedHex* selectedHex = nullptr;
 
-    std::vector<const Hex*> path = {};
-    std::vector<const Hex*> actionHexes = {};
     std::vector<const Hex*> reachableHexes = {};
 
+    void updateCamera(UpdateInfo const& infos);
+    void updateSelectedHex(UpdateInfo const& infos);
+
+    void nextTurn();
+    bool is_player_turn;
+
+    /* Player Turn */
+    enum class PlayerState {
+        Waiting, Move, Action_1, Action_2, Action_3
+    };
+
     void updatePlayerTurn(UpdateInfo const& infos);
+
+    PlayerState playerState_on_start = PlayerState::Waiting;
+    PlayerState playerState;
+    int MP;
+    std::vector<const Hex*> path = {};
+    std::vector<const Hex*> actionHexes = {};
+
+    void playerOnWaiting(UpdateInfo const& infos);
+    void playerOnMove(UpdateInfo const& infos);
+    void playerOnAction(UpdateInfo const& infos);
+
+
+    /* Enemies Turn */
+    void updateEnemiesTurn(UpdateInfo const& infos);
 };
 
 #endif

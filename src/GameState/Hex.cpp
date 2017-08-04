@@ -20,6 +20,11 @@ Hex::Type Hex::getType() const {
     return type;
 }
 
+void Hex::setType(Hex::Type type) {
+    this->type = type;
+}
+
+
 std::string Hex::to_string(Hex::Type type) {
     switch(type) {
         case Hex::Type::Ground:
@@ -28,6 +33,8 @@ std::string Hex::to_string(Hex::Type type) {
             return "Lava";
         case Hex::Type::Wall:
             return "Wall";
+        case Hex::Type::Unknown:
+            return "Unknown";
         default:
             return "undefined";
     }

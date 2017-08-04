@@ -52,7 +52,7 @@ private:
     const sf::Texture& getHexTexture(Hex::Type type);
     const sf::Texture& getUnitTexture(bool is_player);
 
-    std::vector<HexCollider*> colliders_hexes;
+    std::vector<HexCollider*> colliders_hexes = {};
     //std::vector<UnitCollider*> colliders_unit;
 
     static float WIDTH_HEX_PIXELS;

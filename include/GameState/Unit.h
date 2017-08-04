@@ -16,11 +16,13 @@ public:
     const Hex* getHex() const;
     void setHex(const Hex* h);
     std::vector<const Hex*> getPossibleActionHexes(Map const& map, unsigned int action) const;
+    void doAction (Map const& map, unsigned int action, const Hex* hex);
+
+protected:
+    std::vector<Action*> actions = {};
+    int movement_point = 1;
 
 private:
-    int movement_point = 1;
-    std::vector<Action*> actions = {};
-
     const Hex* hex;
 };
 

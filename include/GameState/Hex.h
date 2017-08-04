@@ -23,6 +23,7 @@ public:
     enum class Type {
         Ground, Lava, Wall,
 
+        Unknown,
         Size
     };
 
@@ -33,6 +34,7 @@ public:
     int getY() const;
 
     Type getType() const;
+    void setType(Type type);
 
     static std::string to_string (Type type);
     static bool walkable(const Hex* hex);
