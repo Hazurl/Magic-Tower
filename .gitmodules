@@ -1,0 +1,3 @@
+[submodule "Framework-haz"]
+	path = Framework-haz
+	url = https://github.com/Hazurl/Framework-haz.git

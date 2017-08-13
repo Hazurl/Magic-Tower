@@ -10,15 +10,16 @@ OBJ := $(patsubst %.cpp,build/%.o,$(SRC))
 
 OPTIM := -O2
 FLAGS := -std=c++17 -g3 -Wall -Wextra -Wno-pmf-conversions
-LIBS := -lsfml-graphics -lsfml-window -lsfml-system
+LIBS := -lsfml-graphics -lsfml-window -lsfml-system -lframeworkHaz
 INCLUDE := -I ./include
 MAKEFLAGS += --no-print-directory
+HAZ_LIB := libframeworkHaz.so
 
 all: $(DEST)
 
 # Main build task
 # Compile each file and link them
-$(DEST): $(BUILD_DIR) $(OBJ)
+$(DEST): $(BUILD_DIR) $(OBJ) build/$(HAZ_LIB)
 	@echo "\033[32m\033[1m :: Linking of all objects\033[0m"
 	@g++ $(INCLUDE) $(FLAGS) $(OBJ) -o $(DEST) $(LIBS)
 	@echo -n "\033[34m"
@@ -35,6 +36,12 @@ build/%.o: %.cpp
 #make build folders
 $(BUILD_DIR):
 	@mkdir -p $@
+
+build/$(HAZ_LIB): $(BUILD_DIR)
+	@cd Framework-haz && make lib
+	cp Framework-haz/build/lib/$(HAZ_LIB) build/
+
+framework-haz: build/$(HAZ_LIB)
 
 # Clean every build files by destroying the build/ folder.
 clean:
