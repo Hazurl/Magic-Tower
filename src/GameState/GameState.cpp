@@ -48,24 +48,24 @@ void GameState::updateAnimations (float deltaTime) {
 }
 
 void GameState::updateCamera(UpdateInfo const& infos) {
-    if (infos.inputs.isPressed(Input::Button::MouseLeft)) {
-        start_mouse_pos = last_mouse_pos = infos.inputs.getMousePosition();
+    if (Input::isPressed(Input::Button::MouseLeft)) {
+        start_mouse_pos = last_mouse_pos = Input::getMousePosition();
     }
-    else if (infos.inputs.isDown(Input::Button::MouseLeft)) {
-        sf::Vector2f current_mouse_pos = infos.inputs.getMousePosition();
+    else if (Input::isDown(Input::Button::MouseLeft)) {
+        sf::Vector2f current_mouse_pos = Input::getMousePosition();
         
         camera.move(current_mouse_pos.x - last_mouse_pos.x, current_mouse_pos.y - last_mouse_pos.y );
 
         last_mouse_pos = current_mouse_pos;
     }
 
-    if (infos.inputs.getScroll() != 0) {
-        camera.moveZoom(infos.inputs.getScroll());
+    if (Input::getScroll() != 0) {
+        camera.moveZoom(Input::getScroll());
     }
 }
 
 void GameState::updateSelectedHex(UpdateInfo const& infos) {
-    if (!infos.RayCast_Hex.empty() && infos.inputs.isReleased(Input::Button::MouseLeft) && start_mouse_pos == infos.inputs.getMousePosition()) {
+    if (!infos.RayCast_Hex.empty() && Input::isReleased(Input::Button::MouseLeft) && start_mouse_pos == Input::getMousePosition()) {
         std::cout << "Set Selected Hex : " << infos.RayCast_Hex[0] << std::endl;
         setSelectedHex(infos.RayCast_Hex[0]);
     } else

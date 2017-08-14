@@ -27,7 +27,7 @@ int GameEngine::start() {
 }
 
 void GameEngine::manageEvents() {
-    inputs.resetEvents();
+    Input::resetEvents();
     sf::Event e;
     while (window.pollEvent(e)) {
         switch (e.type) {
@@ -36,7 +36,7 @@ void GameEngine::manageEvents() {
             break;
 
         case sf::Event::MouseWheelScrolled:
-            inputs.onScrollEvent(e.mouseWheelScroll.delta);
+            Input::onScrollEvent(e.mouseWheelScroll.delta);
             break;
 
         default: 
@@ -57,18 +57,19 @@ void GameEngine::manageUpdates(float deltaTime) {
 #if DEBUG > 0
     debug.update();
 #endif
-    inputs.updateButtonsStates(window);
+    Input::updateButtonsStates(window);
 
-    auto hexes_raycast = gameRenderer.raycast_hexLayer(inputs.getMouseX(), inputs.getMouseY());
+    auto hexes_raycast = gameRenderer.raycast_hexLayer(Input::getMouseX(), Input::getMouseY());
     
 #if DEBUG > 1
-    if (inputs.isDown(Input::Button::Space)) {
+    if (Input::isDown(Input::Button::Space)) {
         for (auto* hex : hexes_raycast) {
             std::cout << "Hex (" << hex->getX() << ", " << hex->getY() << ")" << std::endl;
         }
     }
 #endif
 
-    gameState.updateInputs({ inputs, hexes_raycast, {} });
+    gameState.updateInputs({ hexes_raycast, {} });
     gameState.updateAnimations(deltaTime);
+
 }

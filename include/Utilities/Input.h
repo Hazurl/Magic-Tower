@@ -12,7 +12,7 @@ class Input {
 
 public:
     enum class Button {
-        MouseLeft = 42,
+        MouseLeft,
         MouseRight,
         Space,
         Escape,
@@ -28,33 +28,30 @@ public:
         Down
     };
     
-    Input();
-    ~Input();
+    static float getMouseX();
+    static float getMouseY();
+    static sf::Vector2f getMousePosition();
+    static bool isPressed(Button but);
+    static bool isReleased(Button but);
+    static bool isUp(Button but);
+    static bool isDown(Button but);
+    static float getScroll();
 
-    float getMouseX() const;
-    float getMouseY() const;
-    sf::Vector2f getMousePosition() const;
-    bool isPressed(Button but) const;
-    bool isReleased(Button but) const;
-    bool isUp(Button but) const;
-    bool isDown(Button but) const;
-    float getScroll() const;
+    static ButtonState getButtonState(Button but);
 
-    ButtonState getButtonState(Button but) const;
-
-    void resetEvents();
-    void updateButtonsStates(sf::RenderWindow& window);
-    void onScrollEvent(float scrollDelta);
+    static void resetEvents();
+    static void updateButtonsStates(sf::RenderWindow& window);
+    static void onScrollEvent(float scrollDelta);
 
     static std::string to_string(Button but);
     static std::string to_string(ButtonState but_state);
 
 private:
-    void changeState(Button but, bool is_pressed);
+    static void changeState(Button but, bool is_pressed);
 
-    std::map<Button, ButtonState> inputs;
-    float mouseX, mouseY;
-    float scroll;
+    static std::map<Button, ButtonState> inputs;
+    static float mouseX, mouseY;
+    static float scroll;
 };
 
 #endif

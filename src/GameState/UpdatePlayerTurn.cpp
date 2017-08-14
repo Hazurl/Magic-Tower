@@ -20,17 +20,17 @@ void GameState::updatePlayerTurn(UpdateInfo const& infos) {
 }
 
 void GameState::playerOnWaiting(UpdateInfo const& infos) {
-    if (infos.inputs.isPressed(Input::Button::Action_1)) {
+    if (Input::isPressed(Input::Button::Action_1)) {
         actionHexes = player->getPossibleActionHexes(map, 0);
         std::cout << "Action_1" << std::endl;
         playerState = PlayerState::Action_1;
     }
-    else if (infos.inputs.isPressed(Input::Button::Action_2)) {
+    else if (Input::isPressed(Input::Button::Action_2)) {
         actionHexes = player->getPossibleActionHexes(map, 1);
         std::cout << "Action_2" << std::endl;
         playerState = PlayerState::Action_2;
     }
-    else if (infos.inputs.isPressed(Input::Button::Action_3)) {
+    else if (Input::isPressed(Input::Button::Action_3)) {
         actionHexes = player->getPossibleActionHexes(map, 2);
         std::cout << "Action_3" << std::endl;
         playerState = PlayerState::Action_3;
@@ -64,19 +64,19 @@ void GameState::playerOnMove(UpdateInfo const& infos) {
 }
 
 void GameState::playerOnAction(UpdateInfo const& infos) {
-    if (infos.inputs.isPressed(Input::Button::Action_1)) {
+    if (Input::isPressed(Input::Button::Action_1)) {
         playerState = playerState == PlayerState::Action_1 ? PlayerState::Waiting : PlayerState::Action_1;
         return;
 
-    } else if (infos.inputs.isPressed(Input::Button::Action_2)) {
+    } else if (Input::isPressed(Input::Button::Action_2)) {
         playerState = playerState == PlayerState::Action_2 ? PlayerState::Waiting : PlayerState::Action_2;
         return;
 
-    } else if (infos.inputs.isPressed(Input::Button::Action_3)) {
+    } else if (Input::isPressed(Input::Button::Action_3)) {
         playerState = playerState == PlayerState::Action_3 ? PlayerState::Waiting : PlayerState::Action_3;
         return;
         
-    } else if (infos.inputs.isPressed(Input::Button::Escape)) {
+    } else if (Input::isPressed(Input::Button::Escape)) {
         playerState = PlayerState::Waiting;
         return;
     }

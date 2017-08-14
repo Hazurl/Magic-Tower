@@ -17,7 +17,6 @@ class GameState {
 
 public:
     struct UpdateInfo {
-        const Input inputs;
         const std::vector<const Hex*> RayCast_Hex;
         const std::vector<const Unit*> RayCast_Unit;
         //const std::vector<const UI*> RayCast_UI;

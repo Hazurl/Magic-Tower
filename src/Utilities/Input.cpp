@@ -1,119 +1,116 @@
 #include <Utilities/Input.h>
 
-Input::Input() : inputs({
-        { Input::Button::MouseLeft, Input::ButtonState::Up },
-        { Input::Button::MouseRight, Input::ButtonState::Up },
-        { Input::Button::Space, Input::ButtonState::Up },
-        { Input::Button::Escape, Input::ButtonState::Up },
-        { Input::Button::Action_1, Input::ButtonState::Up },
-        { Input::Button::Action_2, Input::ButtonState::Up },
-        { Input::Button::Action_3, Input::ButtonState::Up },
-    }),
-    mouseX(0),
-    mouseY(0) {
+float Input::mouseX = 0;
+float Input::mouseY = 0;
+float Input::scroll = 0;
+
+std::map<Input::Button, Input::ButtonState> Input::inputs {
+    { Input::Button::MouseLeft, Input::ButtonState::Up },
+    { Input::Button::MouseRight, Input::ButtonState::Up },
+    { Input::Button::Space, Input::ButtonState::Up },
+    { Input::Button::Escape, Input::ButtonState::Up },
+    { Input::Button::Action_1, Input::ButtonState::Up },
+    { Input::Button::Action_2, Input::ButtonState::Up },
+    { Input::Button::Action_3, Input::ButtonState::Up },
+};
+
+float Input::getMouseX() {
+    return Input::mouseX;
 }
 
-Input::~Input() {
-
+float Input::getMouseY() {
+    return Input::mouseY;
 }
 
-float Input::getMouseX() const {
-    return mouseX;
+sf::Vector2f Input::getMousePosition() {
+    return { Input::mouseX, Input::mouseY };
 }
 
-float Input::getMouseY() const {
-    return mouseY;
+bool Input::isPressed(Input::Button but)  {
+    assert(Input::inputs.find(but) != Input::inputs.end());
+
+    return Input::inputs.at(but) == Input::ButtonState::Pressed;
 }
 
-sf::Vector2f Input::getMousePosition() const {
-    return { mouseX, mouseY };
+bool Input::isReleased(Input::Button but) {
+    assert(Input::inputs.find(but) != Input::inputs.end());
+
+    return Input::inputs.at(but) == Input::ButtonState::Released;
 }
 
-bool Input::isPressed(Input::Button but) const  {
-    assert(inputs.find(but) != inputs.end());
+bool Input::isUp(Input::Button but) {
+    assert(Input::inputs.find(but) != Input::inputs.end());
 
-    return inputs.at(but) == Input::ButtonState::Pressed;
-}
-
-bool Input::isReleased(Input::Button but) const {
-    assert(inputs.find(but) != inputs.end());
-
-    return inputs.at(but) == Input::ButtonState::Released;
-}
-
-bool Input::isUp(Input::Button but) const {
-    assert(inputs.find(but) != inputs.end());
-
-    auto st = inputs.at(but);
+    auto st = Input::inputs.at(but);
     
     return st == Input::ButtonState::Released || st == Input::ButtonState::Up;
 }
 
-bool Input::isDown(Input::Button but) const {
-    assert(inputs.find(but) != inputs.end());
+bool Input::isDown(Input::Button but) {
+    assert(Input::inputs.find(but) != Input::inputs.end());
 
-    auto st = inputs.at(but);
+    auto st = Input::inputs.at(but);
     
     return st == Input::ButtonState::Pressed || st == Input::ButtonState::Down;
 }
 
-float Input::getScroll() const {
-    return scroll;
+float Input::getScroll() {
+    return Input::scroll;
 }
 
-Input::ButtonState Input::getButtonState(Input::Button but) const {
-    assert(inputs.find(but) != inputs.end());
+Input::ButtonState Input::getButtonState(Input::Button but) {
+    assert(Input::inputs.find(but) != Input::inputs.end());
 
-    return inputs.at(but);
+    return Input::inputs.at(but);
 }
 
 void Input::resetEvents() {
-    scroll = 0;
+    Input::scroll = 0;
 }
 
 void Input::updateButtonsStates(sf::RenderWindow& window) {
     // Buton::MouseLeft
-    changeState(Input::Button::MouseLeft, sf::Mouse::isButtonPressed(sf::Mouse::Left));
+    Input::changeState(Input::Button::MouseLeft, sf::Mouse::isButtonPressed(sf::Mouse::Left));
     // Buton::MouseRight
-    changeState(Input::Button::MouseRight, sf::Mouse::isButtonPressed(sf::Mouse::Right));
+    Input::changeState(Input::Button::MouseRight, sf::Mouse::isButtonPressed(sf::Mouse::Right));
     // Buton::Space
-    changeState(Input::Button::Space, sf::Keyboard::isKeyPressed(sf::Keyboard::Space));
+    Input::changeState(Input::Button::Space, sf::Keyboard::isKeyPressed(sf::Keyboard::Space));
     // Buton::Escape
-    changeState(Input::Button::Escape, sf::Keyboard::isKeyPressed(sf::Keyboard::Escape));
+    Input::changeState(Input::Button::Escape, sf::Keyboard::isKeyPressed(sf::Keyboard::Escape));
     // Buton::Action_1
-    changeState(Input::Button::Action_1, sf::Keyboard::isKeyPressed(sf::Keyboard::Num1));
+    Input::changeState(Input::Button::Action_1, sf::Keyboard::isKeyPressed(sf::Keyboard::Num1));
     // Buton::Action_2
-    changeState(Input::Button::Action_2, sf::Keyboard::isKeyPressed(sf::Keyboard::Num2));
+    Input::changeState(Input::Button::Action_2, sf::Keyboard::isKeyPressed(sf::Keyboard::Num2));
     // Buton::Action_3
-    changeState(Input::Button::Action_3, sf::Keyboard::isKeyPressed(sf::Keyboard::Num3));
+    Input::changeState(Input::Button::Action_3, sf::Keyboard::isKeyPressed(sf::Keyboard::Num3));
 
     auto posMouse = sf::Mouse::getPosition(window);
-    mouseX = posMouse.x; 
-    mouseY = posMouse.y; 
+    Input::mouseX = posMouse.x; 
+    Input::mouseY = posMouse.y; 
 }
 
 void Input::onScrollEvent(float scrollDelta) {
-    scroll += scrollDelta;
+    Input::scroll += scrollDelta;
 }
 
 void Input::changeState(Button but, bool is_pressed) {
     assert(inputs.find(but) != inputs.end());
 
-    switch (inputs[but]) {
+    switch (Input::inputs[but]) {
         case Input::ButtonState::Down:
         case Input::ButtonState::Pressed:
             if (is_pressed)
-                inputs[but] = Input::ButtonState::Down;
+                Input::inputs[but] = Input::ButtonState::Down;
             else
-                inputs[but] = Input::ButtonState::Released;
+                Input::inputs[but] = Input::ButtonState::Released;
             break;
 
         case Input::ButtonState::Up:
         case Input::ButtonState::Released:
             if (is_pressed)
-                inputs[but] = Input::ButtonState::Pressed;
+                Input::inputs[but] = Input::ButtonState::Pressed;
             else
-                inputs[but] = Input::ButtonState::Up;
+                Input::inputs[but] = Input::ButtonState::Up;
             break;
     }
 }
