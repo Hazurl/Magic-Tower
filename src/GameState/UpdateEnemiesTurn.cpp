@@ -1,5 +1,5 @@
 #include <GameState/GameState.h>
-
+/*
 void GameState::updateEnemiesTurn(UpdateInfo const& infos) {
     for (auto* e : enemies) {
         
@@ -8,3 +8,4 @@ void GameState::updateEnemiesTurn(UpdateInfo const& infos) {
     nextTurn();
 }
 
+*/

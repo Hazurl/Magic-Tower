@@ -1,5 +1,5 @@
 #include <GameState/GameState.h>
-
+/*
 void GameState::updatePlayerTurn(UpdateInfo const& infos) {
     path = {};
     actionHexes = {};
@@ -120,3 +120,4 @@ void GameState::playerOnAction(UpdateInfo const& infos) {
         }
     }
 }
+*/

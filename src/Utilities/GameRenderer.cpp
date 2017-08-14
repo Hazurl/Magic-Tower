@@ -1,5 +1,5 @@
 #include <Utilities/GameRenderer.h>
-
+/*
 float GameRenderer::HEIGHT_HEX_PIXELS = 50;
 float GameRenderer::WIDTH_HEX_PIXELS = GameRenderer::HEIGHT_HEX_PIXELS * sqrt(3) / 2;
 
@@ -95,7 +95,7 @@ void GameRenderer::renderSelectedHex(const SelectedHex* sHex) {
     hexa2.setRotation(-sHex->getRotation());
 
     window->draw(hexa1);
-    window->draw(hexa2);*/
+    window->draw(hexa2);
 }
 
 void GameRenderer::renderHexLayer(std::vector<const Hex*> hexes) {
@@ -120,7 +120,7 @@ void GameRenderer::renderUnitLayer(std::vector<const Unit*> units) {
         // TODO 
         /*colliders_units.push_back(new UnitCollider(unit_sp, relative_x + origin_x, 
                                                             relative_y + origin_y, 
-                                                            sprite_rect.height * 0.4));*/
+                                                            sprite_rect.height * 0.4));
 #if DEBUG > 1
         //colliders_hexes.back()->draw(window, *camera);
 #endif
@@ -222,4 +222,4 @@ void GameRenderer::drawLine(sf::Vector2f const& begin, sf::Vector2f const& end, 
         vertices[i].color = color;
 
     window->draw(vertices, 4, sf::Quads);
-}
+}*/

@@ -1,6 +1,10 @@
 #ifndef __DEBUG
 #define __DEBUG
 
+#include <Utilities/DebugMacro.h>
+
+#if DEBUG > 0
+
 #include <SFML/Graphics.hpp>
 #include <type_traits>
 #include <typeinfo>
@@ -16,7 +20,6 @@
 #include <GameObject/SelectedHex.h>
 
 #include <Utilities/RessourcesLoader.h>
-#include <Utilities/DebugMacro.h>
 #include <Utilities/Input.h>
 #include <Utilities/UI.h>
 
@@ -120,5 +123,7 @@ private:
     sf::RenderWindow window;
     UI ui;
 };
+
+#endif
 
 #endif

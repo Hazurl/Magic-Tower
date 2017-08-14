@@ -1,5 +1,7 @@
 #include <Utilities/Debug.h>
 
+#if DEBUG > 0
+
 Debug::Debug(GameState* gameState, Input* input) : gameState(gameState), input(input), window(sf::VideoMode(400, 800), "Debug", sf::Style::Titlebar | sf::Style::Close) {
     window.setPosition({1300, 0});
 
@@ -101,3 +103,5 @@ UI::Panel* Debug::createCollapsablePanel(std::string const& name, sf::Text title
 
     return panel;
 }
+
+#endif

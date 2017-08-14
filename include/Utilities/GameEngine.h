@@ -7,12 +7,15 @@
 
 #include <Utilities/Constant.h>
 #include <Utilities/DebugMacro.h>
-#include <Utilities/Debug.h>
 #include <Utilities/RessourcesLoader.h>
 #include <Utilities/Input.h>
 #include <Utilities/GameRenderer.h>
 
 #include <GameState/GameState.h>
+
+#include <frameworkHaz/GameObject/GameObject.hpp>
+#include <frameworkHaz/GameObject/Environement.hpp>
+#include <frameworkHaz/GameObject/2D/Physic.hpp>
 
 class GameEngine {
     GIVE_ACCESS_DEBUG()
@@ -29,13 +32,7 @@ private:
 
     sf::RenderWindow window;
 
-    GameState gameState;
-    GameRenderer gameRenderer;
-    
-    Input inputs;
-#if DEBUG > 0
-    Debug debug;
-#endif
+    haz::Environement env;
 };
 
 #endif

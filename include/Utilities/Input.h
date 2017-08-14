@@ -1,11 +1,12 @@
 #ifndef __INPUT
 #define __INPUT
 
-#include <SFML/Graphics.hpp>
 #include <cassert>
 #include <iostream>
-
+#include <SFML/Graphics.hpp>
 #include <Utilities/DebugMacro.h>
+
+#include <frameworkHaz/Geometry/2D/Vector.hpp>
 
 class Input {
     GIVE_ACCESS_DEBUG()
@@ -30,7 +31,7 @@ public:
     
     static float getMouseX();
     static float getMouseY();
-    static sf::Vector2f getMousePosition();
+    static haz::_2D::Vectorf getMousePosition();
     static bool isPressed(Button but);
     static bool isReleased(Button but);
     static bool isUp(Button but);

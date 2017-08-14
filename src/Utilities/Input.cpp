@@ -22,7 +22,7 @@ float Input::getMouseY() {
     return Input::mouseY;
 }
 
-sf::Vector2f Input::getMousePosition() {
+haz::_2D::Vectorf Input::getMousePosition() {
     return { Input::mouseX, Input::mouseY };
 }
 

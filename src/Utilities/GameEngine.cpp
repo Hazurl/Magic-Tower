@@ -10,11 +10,6 @@ GameEngine::~GameEngine() {
 }
 
 int GameEngine::start() {
-#if DEBUG > 0
-    debug.use(&gameState);
-    debug.use(&inputs);
-#endif
-
     sf::Clock clock;
 
     while (window.isOpen()) {
@@ -48,28 +43,14 @@ void GameEngine::manageEvents() {
 void GameEngine::manageDraw() {
     window.clear(sf::Color(50, 50, 50));
 
-    gameRenderer.render(window, gameState);
+    //gameRenderer.render(window, gameState);
 
     window.display();
 }
 
 void GameEngine::manageUpdates(float deltaTime) {
-#if DEBUG > 0
-    debug.update();
-#endif
     Input::updateButtonsStates(window);
 
-    auto hexes_raycast = gameRenderer.raycast_hexLayer(Input::getMouseX(), Input::getMouseY());
+    auto hexes_raycast = haz::_2D::Physic::raycast_all(&env, Input::getMousePosition(), haz::Layers::Ground);
     
-#if DEBUG > 1
-    if (Input::isDown(Input::Button::Space)) {
-        for (auto* hex : hexes_raycast) {
-            std::cout << "Hex (" << hex->getX() << ", " << hex->getY() << ")" << std::endl;
-        }
-    }
-#endif
-
-    gameState.updateInputs({ hexes_raycast, {} });
-    gameState.updateAnimations(deltaTime);
-
 }
