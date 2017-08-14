@@ -3,7 +3,7 @@
 Debug::Debug(GameState* gameState, Input* input) : gameState(gameState), input(input), window(sf::VideoMode(400, 800), "Debug", sf::Style::Titlebar | sf::Style::Close) {
     window.setPosition({1300, 0});
 
-    RessourcesLoader::load<sf::Font>("roboto", "Font/Roboto-Regular.ttf");
+    FontLoader::load("Debug_Scene", "Font/Roboto-Regular.ttf", "roboto");
     rebuild();
 }
 
@@ -60,7 +60,7 @@ void Debug::update() {
 
 sf::Text Debug::createText(sf::String const& str) {
     sf::Text text;
-    text.setFont(*RessourcesLoader::get<sf::Font>("roboto"));
+    text.setFont(*FontLoader::get("Debug_Scene", "roboto"));
     text.setCharacterSize(24);
     text.setColor(sf::Color::Black);
     text.setString(str);

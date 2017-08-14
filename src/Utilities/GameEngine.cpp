@@ -23,8 +23,6 @@ int GameEngine::start() {
         manageDraw();
     }
 
-    RessourcesLoader::clearAll();
-
     return 0;
 }
 

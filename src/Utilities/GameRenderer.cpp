@@ -7,14 +7,14 @@ float GameRenderer::HEIGHT_UNIT_PIXELS = GameRenderer::HEIGHT_HEX_PIXELS * 0.75f
 float GameRenderer::WIDTH_UNIT_PIXELS = GameRenderer::HEIGHT_UNIT_PIXELS;
 
 GameRenderer::GameRenderer() {
-    RessourcesLoader::load<sf::Texture>("hex_ground", "image/Ground.png");
-    RessourcesLoader::load<sf::Texture>("hex_wall", "image/wall.png");
-    RessourcesLoader::load<sf::Texture>("hex_lava", "image/lava.png");
+    TextureLoader::loadGlobal("image/Ground.png", "hex_ground");
+    TextureLoader::loadGlobal("image/wall.png", "hex_wall");
+    TextureLoader::loadGlobal("image/lava.png", "hex_lava");
 
-    RessourcesLoader::load<sf::Texture>("unit_player", "image/hat.png");
-    RessourcesLoader::load<sf::Texture>("unit_enemy", "image/warrior.png");
+    TextureLoader::loadGlobal("image/hat.png", "unit_player");
+    TextureLoader::loadGlobal("image/warrior.png", "unit_enemy");
 
-    RessourcesLoader::load<sf::Font>("roboto", "Font/Roboto-Regular.ttf");
+    FontLoader::loadGlobal("Font/Roboto-Regular.ttf", "roboto");
 }
 
 GameRenderer::~GameRenderer() {
@@ -158,11 +158,11 @@ sf::CircleShape GameRenderer::createHexShape (int x, int y, float thickness, flo
 
 const sf::Texture& GameRenderer::getHexTexture(Hex::Type type) {
     if (type == Hex::Type::Ground)
-        return *RessourcesLoader::get<sf::Texture>("hex_ground");
+        return *TextureLoader::getGlobal("hex_ground");
     else if (type == Hex::Type::Lava)
-        return *RessourcesLoader::get<sf::Texture>("hex_lava");
+        return *TextureLoader::getGlobal("hex_lava");
     else if (type == Hex::Type::Wall)
-        return *RessourcesLoader::get<sf::Texture>("hex_wall");
+        return *TextureLoader::getGlobal("hex_wall");
 
     assert(false);
 }
@@ -180,9 +180,9 @@ sf::Sprite GameRenderer::createSprite(int x, int y, sf::Texture const& texture, 
 
 const sf::Texture& GameRenderer::getUnitTexture(bool is_player) {
     if (is_player)
-        return *RessourcesLoader::get<sf::Texture>("unit_player");
+        return *TextureLoader::getGlobal("unit_player");
     else
-        return *RessourcesLoader::get<sf::Texture>("unit_enemy");
+        return *TextureLoader::getGlobal("unit_enemy");
 
     assert(false);
 }
@@ -192,7 +192,7 @@ inline sf::Text GameRenderer::createText(sf::Vector2f const& pos, sf::String con
 }
 
 sf::Text GameRenderer::createText(float screenX, float screenY, sf::String const& str, std::string const& font, sf::Color const& color, unsigned int size, bool proportional_to_zoom) {
-    sf::Text text(str, *RessourcesLoader::get<sf::Font>(font));
+    sf::Text text(str, *FontLoader::getGlobal(font));
     text.setColor(color);
     if (proportional_to_zoom)
         size *= camera->getZoom();
