@@ -32,8 +32,8 @@ public:
     }
 };
 
-typedef haz::RessourceLoader<sf::Font,      std::string,    std::string,    std::string,    FontAllocator>      FontLoader;
-//                           type           argAlloc        Key             scene Key       Allocator
-typedef haz::RessourceLoader<sf::Texture,   std::string,    std::string,    std::string,    TextureAllocator>   TextureLoader;
+typedef haz::RessourceLoader<sf::Font,      std::string,    std::string,    int,        FontAllocator>      FontLoader;
+//                           type           argAlloc        Key             scene Key   Allocator
+typedef haz::RessourceLoader<sf::Texture,   std::string,    std::string,    int,        TextureAllocator>   TextureLoader;
 
 #endif

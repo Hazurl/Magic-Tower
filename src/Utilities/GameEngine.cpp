@@ -52,5 +52,4 @@ void GameEngine::manageUpdates(float deltaTime) {
     Input::updateButtonsStates(window);
 
     auto hexes_raycast = haz::_2D::Physic::raycast_all(&env, Input::getMousePosition(), haz::Layers::Ground);
-    
 }

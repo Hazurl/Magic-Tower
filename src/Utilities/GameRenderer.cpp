@@ -7,14 +7,6 @@ float GameRenderer::HEIGHT_UNIT_PIXELS = GameRenderer::HEIGHT_HEX_PIXELS * 0.75f
 float GameRenderer::WIDTH_UNIT_PIXELS = GameRenderer::HEIGHT_UNIT_PIXELS;
 
 GameRenderer::GameRenderer() {
-    TextureLoader::loadGlobal("image/Ground.png", "hex_ground");
-    TextureLoader::loadGlobal("image/wall.png", "hex_wall");
-    TextureLoader::loadGlobal("image/lava.png", "hex_lava");
-
-    TextureLoader::loadGlobal("image/hat.png", "unit_player");
-    TextureLoader::loadGlobal("image/warrior.png", "unit_enemy");
-
-    FontLoader::loadGlobal("Font/Roboto-Regular.ttf", "roboto");
 }
 
 GameRenderer::~GameRenderer() {
