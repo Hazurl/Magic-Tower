@@ -8,17 +8,19 @@ DEST := build/magic_tower
 
 OBJ := $(patsubst %.cpp,build/%.o,$(SRC))
 
+HAZ_LIB_NAME := libframeworkHaz.so
+HAZ_LIB_PATH := build/
+
 FLAGS := -std=c++17 -O2 -g3 -Wall -Wextra -Wno-pmf-conversions
-LIBS := -lsfml-graphics -lsfml-window -lsfml-system -lframeworkHaz
-INCLUDE := -Iinclude
+LIBS := -lsfml-graphics -lsfml-window -lsfml-system -lframeworkHaz -L$(HAZ_LIB_PATH)
+INCLUDE := -Iinclude -IFramework-haz/include
 MAKEFLAGS += --no-print-directory
-HAZ_LIB := Framework-haz/build/lib/libframeworkHaz.so
 
 all: $(DEST)
 
 # Main build task
 # Compile each file and link them
-$(DEST): $(HAZ_LIB) $(BUILD_DIR) $(OBJ)
+$(DEST): $(HAZ_LIB_PATH)/$(HAZ_LIB_NAME) $(BUILD_DIR) $(OBJ)
 	@echo "\033[32m\033[1m :: Linking of all objects\033[0m"
 	@g++ $(INCLUDE) $(FLAGS) -o $(DEST) $(OBJ) $(LIBS) 
 	@echo -n "\033[34m"
@@ -36,10 +38,11 @@ build/%.o: %.cpp
 $(BUILD_DIR):
 	@mkdir -p $@
 
-$(HAZ_LIB):
-	@cd Framework-haz && make install
+$(HAZ_LIB_PATH)/$(HAZ_LIB_NAME): $(BUILD_DIR)
+	@cd Framework-haz && make lib
+	@cp Framework-haz/build/lib/$(HAZ_LIB_NAME) $(HAZ_LIB_PATH)
 
-framework-haz: $(HAZ_LIB)
+framework-haz: $(HAZ_LIB_PATH)/$(HAZ_LIB_NAME)
 
 # Clean every build files by destroying the build/ folder.
 clean:
@@ -58,7 +61,7 @@ run: $(DEST)
 	@echo "      Run       "
 	@echo "----------------"
 	@echo -n "\033[0m"
-	@$(DEST)
+	@LD_LIBRARY_PATH=$(HAZ_LIB_PATH):$LD_LIBRARY_PATH $(DEST)
 	@echo -n "\033[34m"
 	@echo "----------------"
 	@echo "      Stop      "
