@@ -73,5 +73,7 @@ again:
 	@make clean
 	@make run
 
-debug:
-	@echo $(SRC_DIR)
+# Use fgen
+file:
+	fgen -p=include/$(dir)/$(name).h -t=fgenTemplate/hppTemplate.h class=$(name) define=$(name)
+	fgen -p=src/$(dir)/$(name).cpp -t=fgenTemplate/cppTemplate.cpp class=$(name) include=$(dir)/$(name).h
