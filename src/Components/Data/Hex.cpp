@@ -1,6 +1,10 @@
-#include <GameState/Hex.h>
+#include <Components/Data/Hex.h>
 
-Hex::Hex(int x, int y, Hex::Type type) : x(x), y(y), type(type) {
+Hex::Hex(haz::GameObject* go) : Hex(go, 0, 0, Hex::Type::Unknown) {
+    
+}
+
+Hex::Hex(haz::GameObject* go, int x, int y, Hex::Type type) : haz::Component(go), x(x), y(y), type(type) {
     
 }
 
@@ -24,6 +28,9 @@ void Hex::setType(Hex::Type type) {
     this->type = type;
 }
 
+haz::Component* Hex::clone(haz::GameObject* go) const {
+    return new Hex(go, x, y, type);
+}
 
 std::string Hex::to_string(Hex::Type type) {
     switch(type) {

@@ -1,15 +1,15 @@
-#include <GameObject/HexGO.h>
+/*#include <GameObject/HexGO.h>
 
 HexGO::HexGO(int x, int y, Hex::Type type) : Animate(), Hex(x, y, type) {
-    /*sprite.setColor(sf::Color(200, 200, 200));
+    sprite.setColor(sf::Color(200, 200, 200));
     float scale = HEX_HEIGHT_PIXEL / static_cast<float>(sprite.getTextureRect().height);
-    sprite.setScale(scale, scale);*/
+    sprite.setScale(scale, scale);
 }
 
 HexGO::~HexGO() {
 
 }
-/*
+
 void HexGO::draw(sf::RenderWindow& window, sf::Vector2f offset) {
     sf::Vector2f rel_pos = { HexGO::WIDTH_HEX * (hex.getX() + hex.getY() / 2.f), hex.getY() * 0.75f };
 

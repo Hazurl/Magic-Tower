@@ -8,14 +8,17 @@
 #include <Utilities/Constant.h>
 #include <Utilities/DebugMacro.h>
 #include <Utilities/RessourcesLoader.h>
+#include <Utilities/SceneManager.h>
 #include <Utilities/Input.h>
-#include <Utilities/GameRenderer.h>
 
-#include <GameState/GameState.h>
+#include <GameState/Camera.h>
+
+#include <Components/Renderer/HexRenderer.h>
 
 #include <frameworkHaz/GameObject/GameObject.hpp>
 #include <frameworkHaz/GameObject/Environement.hpp>
 #include <frameworkHaz/GameObject/2D/Physic.hpp>
+#include <frameworkHaz/Tools/Time.hpp>
 
 class GameEngine {
     GIVE_ACCESS_DEBUG()
@@ -27,7 +30,7 @@ public:
 
 private:
     void manageEvents();
-    void manageUpdates(float deltaTime);
+    void manageUpdates(haz::Time const& time);
     void manageDraw();
 
     sf::RenderWindow window;

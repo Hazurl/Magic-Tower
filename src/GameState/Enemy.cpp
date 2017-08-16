@@ -1,4 +1,4 @@
-#include <GameState/Enemy.h>
+/*#include <GameState/Enemy.h>
 
 Enemy::Enemy(const Hex* hex) : Unit(hex) {
     
@@ -6,4 +6,4 @@ Enemy::Enemy(const Hex* hex) : Unit(hex) {
 
 Enemy::~Enemy() {
 
-}
+}*/

@@ -1,5 +1,5 @@
-#include <GameState/GameState.h>
-/*
+/*#include <GameState/GameState.h>
+
 GameState::GameState() : map(8), player(nullptr), enemies({}), selectedHex(nullptr) {
     // Find player position
     auto possibleHexes = map.filterHexes([] (const Hex* h) { return h->getType() == Hex::Type::Ground; });

@@ -4,11 +4,10 @@
 #include <string>
 #include <iostream>
 
-#include <Utilities/DebugMacro.h>
+#include <frameworkHaz/GameObject/Component/Component.hpp>
+#include <frameworkHaz/GameObject/GameObject.hpp>
 
-class Hex {
-    GIVE_ACCESS_DEBUG()
-
+class Hex : public haz::Component {
 public:
     struct Comparator {
         bool operator() (Hex const& h0, Hex const& h1) const {
@@ -27,7 +26,8 @@ public:
         Size
     };
 
-    Hex(int x, int y, Type type = Type::Ground);
+    Hex(haz::GameObject* go);
+    Hex(haz::GameObject* go, int x, int y, Type type = Type::Ground);
     ~Hex();
 
     int getX() const;
@@ -35,6 +35,8 @@ public:
 
     Type getType() const;
     void setType(Type type);
+
+    haz::Component* clone(haz::GameObject* go) const;
 
     static std::string to_string (Type type);
     static bool walkable(const Hex* hex);

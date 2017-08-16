@@ -1,4 +1,4 @@
-#include <Utilities/Pathfinding.h>
+/*#include <Utilities/Pathfinding.h>
 
 bool PathFinding::find(Map const& map, const Hex* start, const Hex* end, std::vector<const Hex*>& result) {
     result.clear();
@@ -67,3 +67,4 @@ bool PathFinding::find(Map const& map, const Hex* start, const Hex* end, std::ve
 }
 
 
+*/

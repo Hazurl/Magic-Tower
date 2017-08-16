@@ -15,16 +15,18 @@ public:
     };
 
     static Scene getCurrentScene();
+    static int getCurrentIDScene();
     static void changeScene(Scene const& id);
 
     static void onNewFrame();
-    static void onSceneLoad(Scene const& scene);
 
 private:
 
     static Scene current;
     static Scene next;
 
+    static void onSceneLoad(Scene const& scene);
+    
 };
 
 #endif

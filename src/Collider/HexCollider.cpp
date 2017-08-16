@@ -1,4 +1,4 @@
-#include <Collider/HexCollider.h>
+/*#include <Collider/HexCollider.h>
 
 float HexCollider::WIDTH_FACTOR = sqrt(3) / 2;
 
@@ -28,4 +28,4 @@ void HexCollider::draw(sf::RenderWindow& window, Camera const& camera) {
 
     hexa.setPosition( x, y );
     window.draw(hexa);
-}
+}*/

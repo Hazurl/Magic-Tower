@@ -1,4 +1,4 @@
-#include <GameObject/SelectedHex.h>
+/*#include <GameObject/SelectedHex.h>
 
 SelectedHex::SelectedHex(const Hex* hex) : hex(hex), colorAnim(Animation<ColorState>(ColorState::Appear)), rotateAnim(Animation<RotateState>(RotateState::Rotate)) {
     colorAnim.addState(ColorState::Visible);
@@ -37,3 +37,4 @@ void SelectedHex::updateAnimations(float deltaTime) {
     colorAnim.update(deltaTime);
     rotateAnim.update(deltaTime);
 }
+*/

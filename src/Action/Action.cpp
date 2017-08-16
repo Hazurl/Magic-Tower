@@ -1,4 +1,4 @@
-#include <Action/Action.h>
+/*#include <Action/Action.h>
 
 Action::Action() {
 
@@ -30,4 +30,4 @@ std::vector<const Hex*> BasicAttack::getPossibleHexes(Map const& map, const Hex*
 
 void BasicAttack::execute(Map const& map, const Hex* hex) {
     std::cout << "Attack : " << hex << std::endl;
-}
+}*/

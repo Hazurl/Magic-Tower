@@ -1,5 +1,5 @@
-#include <Utilities/GameRenderer.h>
-/*
+/*#include <Utilities/GameRenderer.h>
+
 float GameRenderer::HEIGHT_HEX_PIXELS = 50;
 float GameRenderer::WIDTH_HEX_PIXELS = GameRenderer::HEIGHT_HEX_PIXELS * sqrt(3) / 2;
 
@@ -80,7 +80,7 @@ void GameRenderer::renderPath(std::vector<const Hex*> hexes, bool is_accessible)
 }
 
 void GameRenderer::renderSelectedHex(const SelectedHex* sHex) {
-    /*auto hexa1 = createHexShape(sHex->getHex()->getX(), sHex->getHex()->getY(), 2, 0.75, sHex->getColor());
+    auto hexa1 = createHexShape(sHex->getHex()->getX(), sHex->getHex()->getY(), 2, 0.75, sHex->getColor());
     auto hexa2 = createHexShape(sHex->getHex()->getX(), sHex->getHex()->getY(), 2, 0.50, sHex->getColor());
 
     hexa1.setRotation(sHex->getRotation());
@@ -110,7 +110,7 @@ void GameRenderer::renderUnitLayer(std::vector<const Unit*> units) {
         auto sp = createSprite(unit->getHex()->getX(), unit->getHex()->getY(), getUnitTexture(dynamic_cast<const Player*>(unit) != nullptr), GameRenderer::HEIGHT_UNIT_PIXELS);
         window->draw(sp);
         // TODO 
-        /*colliders_units.push_back(new UnitCollider(unit_sp, relative_x + origin_x, 
+        colliders_units.push_back(new UnitCollider(unit_sp, relative_x + origin_x, 
                                                             relative_y + origin_y, 
                                                             sprite_rect.height * 0.4));
 #if DEBUG > 1

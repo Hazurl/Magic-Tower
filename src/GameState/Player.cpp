@@ -1,4 +1,4 @@
-#include <GameState/Player.h>
+/*#include <GameState/Player.h>
 
 Player::Player(const Hex* hex) : Unit(hex), movePoints(3) {
     actions.emplace_back(new BasicAttack(BasicAttack::Type::BASIC, BasicAttack::Area::POINT, 0, 1));
@@ -12,4 +12,4 @@ Player::~Player() {
 
 int Player::getMP() const {
     return movePoints;
-}
+}*/

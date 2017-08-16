@@ -7,14 +7,18 @@ SceneManager::Scene SceneManager::getCurrentScene() {
     return SceneManager::current;
 }
 
+int SceneManager::getCurrentIDScene() {
+    return static_cast<int>(SceneManager::current);
+}
+
 void SceneManager::changeScene(SceneManager::Scene const& id) {
     SceneManager::next = id;
 }
 
 void SceneManager::onNewFrame() {
     if (SceneManager::current != SceneManager::next) {
-        FontLoader::releaseScene(static_cast<int>(SceneManager::current));
-        TextureLoader::releaseScene(static_cast<int>(SceneManager::current));
+        FontLoader::releaseScene(SceneManager::getCurrentIDScene());
+        TextureLoader::releaseScene(SceneManager::getCurrentIDScene());
 
         SceneManager::current = SceneManager::next;
         SceneManager::onSceneLoad(SceneManager::current);

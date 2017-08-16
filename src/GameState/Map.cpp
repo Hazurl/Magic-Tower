@@ -1,4 +1,4 @@
-#include <GameState/Map.h>
+/*#include <GameState/Map.h>
 
 Map::Map(unsigned int size) : size(size) {
     generatePropagation();
@@ -190,11 +190,9 @@ void Map::generatePropagation() {
         double ratio = distance / static_cast<double>(size);
         int rand_type = rand() % 100;
 
-        /*
             Ground -> 90% to 50%
             Wall -> 10% to 20%
             Lava -> 0% to 30%
-        */
 
         int prob_ground = (90 - static_cast<int>(ratio * 40.0));
         int prob_wall = prob_ground + (10 + static_cast<int>(ratio * 10.0));
@@ -214,4 +212,4 @@ void Map::generatePropagation() {
         // Advance Cur
         ++pos;
     }
-}
+}*/
