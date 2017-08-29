@@ -77,3 +77,17 @@ again:
 file:
 	fgen -p=include/$(dir)/$(name).h -t=fgenTemplate/hppTemplate.h class=$(name) define=$(name)
 	fgen -p=src/$(dir)/$(name).cpp -t=fgenTemplate/cppTemplate.cpp class=$(name) include=$(dir)/$(name).h
+
+valgrind: $(DEST)
+	@clear
+	@echo -n "\033[34m"
+	@echo "----------------"
+	@echo "      Run       "
+	@echo "----------------"
+	@echo -n "\033[0m"
+	@LD_LIBRARY_PATH=$(HAZ_LIB_PATH):$LD_LIBRARY_PATH valgrind $(DEST)
+	@echo -n "\033[34m"
+	@echo "----------------"
+	@echo "      Stop      "
+	@echo "----------------"
+	@echo -n "\033[0m"
