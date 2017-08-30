@@ -3,9 +3,13 @@
 
 #include <string>
 #include <iostream>
+#include <cmath>
 
-#include <frameworkHaz/GameObject/Component/Component.hpp>
-#include <frameworkHaz/GameObject/GameObject.hpp>
+#include <Utilities/RessourcesLoader.h>
+#include <Utilities/SceneManager.h>
+#include <Components/Renderer/Renderer.h>
+
+#include <frameworkHaz/2DGOInclude.hpp>
 
 class Hex : public haz::Component {
 public:
@@ -30,8 +34,13 @@ public:
     Hex(haz::GameObject* go, int x, int y, Type type = Type::Ground);
     ~Hex();
 
+    std::string to_string() const;
+    std::vector<std::string> pretty_strings() const;
+        
     int getX() const;
     int getY() const;
+    void setX(int x);
+    void setY(int y);
 
     Type getType() const;
     void setType(Type type);
@@ -51,9 +60,14 @@ public:
     friend std::ostream& operator<< (std::ostream& os, Hex const& hex);
 
 private:
-    const int x, y;
+    int x, y;
 
     Type type;
+
+    Renderer* rend = nullptr;
+
+    void updateTexture();
+    void updatePosition();
 };
 
 namespace std {

@@ -30,6 +30,10 @@ float Camera::getPositionY() const {
     return y;
 }
 
+haz::_2D::Vectorf Camera::getPosition() const {
+    return { x, y };
+}
+
 float Camera::getZoom() const {
     return zoom;
 }

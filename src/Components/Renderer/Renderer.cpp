@@ -1,8 +1,21 @@
 #include <Components/Renderer/Renderer.h>
 
-std::map<haz::IDable::ID_t, Renderer*> Renderer::renderers = {}; 
+const float Renderer::pixel_per_unit = 50;
 
-Renderer::Renderer() : haz::IDable() {
+sf::Sprite Renderer::PartialSprite::to_sprite() const {
+    texture->setSmooth(true);
+    sf::Sprite sprite(*texture);
+
+    sprite.setScale(scale);
+    sprite.setOrigin(texture_rect.width / 2, texture_rect.height / 2);
+    sprite.setRotation(rotation);
+    sprite.setPosition(position);
+
+    return std::move(sprite);
+}
+
+
+Renderer::Renderer(haz::GameObject* go) : haz::Subscriber<Renderer>(), Component(go) {
 
 }
 
@@ -10,27 +23,49 @@ Renderer::~Renderer() {
     
 }
 
-void Renderer::enable() {
-   Renderer::_enable(this->id, this);
+haz::Component* Renderer::clone(haz::GameObject* go) const {
+    auto* r = new Renderer(go);
+    r->partialSprite = partialSprite;
+    return r;
 }
 
-void Renderer::disable() {
-    Renderer::_disable(this->id);
+std::vector<std::string> Renderer::pretty_strings() const {
+    return {
+        "Texture : " + haz::adress(partialSprite.texture),
+        "TextureRect : (" + std::to_string(partialSprite.texture_rect.left) + ", " + std::to_string(partialSprite.texture_rect.top) + ") of size " + 
+        "(" + std::to_string(partialSprite.texture_rect.width) + ", " + std::to_string(partialSprite.texture_rect.height) + ")",
+        "Position : " + to_haz<float>(partialSprite.position).to_string(),
+        "Rotation : " + std::to_string(partialSprite.rotation),
+        "Scale : " + to_haz<float>(partialSprite.scale).to_string(),
+    };
 }
 
-void Renderer::_enable(haz::IDable::ID_t id, Renderer* r) {
-    renderers.insert({ id, r });
+void Renderer::onEnable() {
+    subscribe();
 }
 
-void Renderer::_disable(haz::IDable::ID_t id) {
-    renderers.erase(id);
+void Renderer::onDisable() {
+    unsubscribe();
 }
 
-std::vector<Renderer*> Renderer::getRenderers() {
-    std::vector<Renderer*> rends = {};
-    for (auto& p : Renderer::renderers) {
-        rends.push_back(p.second);
-    }
+void Renderer::update(haz::Time const& , haz::Environement* ) {
+    haz::_2D::Vectorf haz_scale = transform()->globalScale();
+    partialSprite.scale = {haz_scale.x * scale_factor_width, haz_scale.y * scale_factor_height};
+    
+    partialSprite.rotation = transform()->globalRotation();
 
-    return rends;
+    haz::_2D::Vectorf haz_pos = transform()->globalPosition();
+    partialSprite.position = {haz_pos.x, haz_pos.y};
+}
+
+Renderer::PartialSprite Renderer::getPartialSprite() {
+    return partialSprite;
+}
+
+void Renderer::changeTexture(sf::Texture& texture) {
+    partialSprite.texture = &texture;
+    partialSprite.texture_rect = {0, 0, static_cast<int>(texture.getSize().x), static_cast<int>(texture.getSize().y)};
+
+    scale_factor_height = pixel_per_unit / static_cast<float>(partialSprite.texture_rect.height);
+    scale_factor_width = pixel_per_unit / static_cast<float>(partialSprite.texture_rect.width);
 }

@@ -4,28 +4,31 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <cmath>
-#include <cassert>
 #include <functional>
 #include <unordered_set>
 #include <cstdlib>
 #include <algorithm>
 
-#include <GameObject/HexGO.h>
 #include <Utilities/RessourcesLoader.h>
-#include <Utilities/DebugMacro.h>
+#include <Utilities/PrefabFactory.h>
+#include <Components/Data/Hex.h>
 
-class Map {
-    GIVE_ACCESS_DEBUG()
+#include <frameworkHaz/2DGOInclude.hpp>
 
+class Map : public haz::Component {
 public:
-    Map(unsigned int size);
+    Map(haz::GameObject* go);
     ~Map();
+
+    std::string to_string() const;
+    
+    haz::Component* clone(haz::GameObject* go) const;
 
     const Hex* getHexAt(int x, int y) const;
     Hex* getHexAt(int x, int y);
 
     std::vector<const Hex*> filterHexes (std::function<bool(const Hex*)> pred) const;
-    std::vector<const HexGO*> getHexes() const;
+    std::vector<const Hex*> getHexes() const;
     std::vector<const Hex*> getNeighboursOf(const Hex* hex) const;
     std::vector<Hex*> getNeighboursOf(const Hex* hex);
     std::vector<const Hex*> getNeighboursWalkablesOf(const Hex* hex) const;
@@ -41,9 +44,9 @@ private:
     int hexDistance(int x0, int y0, int x1, int y1) const;
     long hashCoords(int x, int y) const;
 
-    unsigned int size;
+    const unsigned int size = 8;
     
-    std::map<long, HexGO> hexes = {};
+    std::map<long, Hex*> hexes = {};
 };
 
 #endif

@@ -45,4 +45,7 @@ void SceneManager::onSceneLoad(SceneManager::Scene const& scene) {
         default:
             break;
     }
+    if (TextureLoader::getDefault() == nullptr) {
+        TextureLoader::setDefault("image/unknown_texture.png");
+    }
 }

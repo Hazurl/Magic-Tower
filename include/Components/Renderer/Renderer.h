@@ -2,28 +2,51 @@
 #define __HAZ_RENDERER
 
 #include <SFML/Graphics.hpp>
-#include <frameworkHaz/Interface/IDable.hpp>
-#include <GameState/Camera.h>
+#include <frameworkHaz/Interface/Subscriber.hpp>
+#include <frameworkHaz/2DGOInclude.hpp>
 
-class Renderer : private haz::IDable {
+#include <Utilities/Converter.h>
+
+#include <cmath>
+
+class Renderer : public haz::Subscriber<Renderer>, public haz::Component {
 public:
-    Renderer();
+    struct PartialSprite {
+        sf::Texture* texture;
+        sf::IntRect texture_rect;
+
+        sf::Vector2f position;
+        sf::Vector2f scale;
+        float rotation;
+
+        sf::Sprite to_sprite() const;
+    };
+
+    static const float pixel_per_unit;
+    
+    Renderer(haz::GameObject* go);
     virtual ~Renderer();
 
-    virtual void draw (sf::RenderWindow& window, Camera const& camera) = 0;
+    haz::Component* clone(haz::GameObject* go) const;
 
-    void enable();
-    void disable();
+    std::vector<std::string> pretty_strings() const;
 
-    static std::vector<Renderer*> getRenderers();
+    PartialSprite getPartialSprite();
+    void changeTexture(sf::Texture& texture);
+    
+    void onEnable();
+    void onDisable();
 
-private:
+    void update(haz::Time const& time, haz::Environement* e) override;
 
-    static void _enable(haz::IDable::ID_t id, Renderer* r);
-    static void _disable(haz::IDable::ID_t id);
+    static inline std::vector<Renderer*> get () { return haz::Subscriber<Renderer>::get(); }
 
-    static std::map<haz::IDable::ID_t, Renderer*> renderers;
+private: 
 
+    PartialSprite partialSprite;
+
+    float scale_factor_height;
+    float scale_factor_width;
 };
 
 #endif

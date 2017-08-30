@@ -10,15 +10,16 @@
 #include <Utilities/RessourcesLoader.h>
 #include <Utilities/SceneManager.h>
 #include <Utilities/Input.h>
+#include <Utilities/PrefabFactory.h>
+#include <Utilities/Converter.h>
 
 #include <GameState/Camera.h>
 
-#include <Components/Renderer/HexRenderer.h>
+#include <Components/Renderer/Renderer.h>
+#include <Components/Data/Hex.h>
+#include <Components/Data/Map.h>
 
-#include <frameworkHaz/GameObject/GameObject.hpp>
-#include <frameworkHaz/GameObject/Environement.hpp>
-#include <frameworkHaz/GameObject/2D/Physic.hpp>
-#include <frameworkHaz/Tools/Time.hpp>
+#include <frameworkHaz/2DGOInclude.hpp>
 
 class GameEngine {
     GIVE_ACCESS_DEBUG()
@@ -36,6 +37,7 @@ private:
     sf::RenderWindow window;
 
     haz::Environement env;
+    Camera camera;
 };
 
 #endif
