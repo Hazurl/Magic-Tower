@@ -5,13 +5,9 @@ float Input::mouseY = 0;
 float Input::scroll = 0;
 
 std::map<Input::Button, Input::ButtonState> Input::inputs {
-    { Input::Button::MouseLeft, Input::ButtonState::Up },
-    { Input::Button::MouseRight, Input::ButtonState::Up },
-    { Input::Button::Space, Input::ButtonState::Up },
-    { Input::Button::Escape, Input::ButtonState::Up },
-    { Input::Button::Action_1, Input::ButtonState::Up },
-    { Input::Button::Action_2, Input::ButtonState::Up },
-    { Input::Button::Action_3, Input::ButtonState::Up },
+#define X(a, b, c) { Input::Button::a, Input::ButtonState::Up },
+    X_BUTTON(X)
+#undef X
 };
 
 float Input::getMouseX() {
@@ -69,20 +65,9 @@ void Input::resetEvents() {
 }
 
 void Input::updateButtonsStates(sf::RenderWindow& window) {
-    // Buton::MouseLeft
-    Input::changeState(Input::Button::MouseLeft, sf::Mouse::isButtonPressed(sf::Mouse::Left));
-    // Buton::MouseRight
-    Input::changeState(Input::Button::MouseRight, sf::Mouse::isButtonPressed(sf::Mouse::Right));
-    // Buton::Space
-    Input::changeState(Input::Button::Space, sf::Keyboard::isKeyPressed(sf::Keyboard::Space));
-    // Buton::Escape
-    Input::changeState(Input::Button::Escape, sf::Keyboard::isKeyPressed(sf::Keyboard::Escape));
-    // Buton::Action_1
-    Input::changeState(Input::Button::Action_1, sf::Keyboard::isKeyPressed(sf::Keyboard::Num1));
-    // Buton::Action_2
-    Input::changeState(Input::Button::Action_2, sf::Keyboard::isKeyPressed(sf::Keyboard::Num2));
-    // Buton::Action_3
-    Input::changeState(Input::Button::Action_3, sf::Keyboard::isKeyPressed(sf::Keyboard::Num3));
+#define X(a, b, c) Input::changeState(Input::Button::a, b);
+    X_BUTTON(X)
+#undef X
 
     auto posMouse = sf::Mouse::getPosition(window);
     Input::mouseX = posMouse.x; 
@@ -117,20 +102,9 @@ void Input::changeState(Button but, bool is_pressed) {
 
 std::string Input::to_string(Input::Button but) {
     switch(but) {
-        case Input::Button::MouseLeft :
-            return "Mouse Left";
-        case Input::Button::MouseRight :
-            return "Mouse Right";
-        case Input::Button::Space :
-            return "Space";
-        case Input::Button::Escape :
-            return "Escape";
-        case Input::Button::Action_1 :
-            return "Action 1";
-        case Input::Button::Action_2 :
-            return "Action 2";
-        case Input::Button::Action_3 :
-            return "Action 3";
+#define X(a, b, c) case Input::Button::a : return c;
+        X_BUTTON(X)
+#undef X
         default :
             assert(false && ("Button not implemented : " + static_cast<int>(but)));
     }

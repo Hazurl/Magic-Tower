@@ -8,18 +8,28 @@
 
 #include <frameworkHaz/Geometry/2D/Vector.hpp>
 
+#define X_BUTTON(X)\
+    X(MouseLeft, sf::Mouse::isButtonPressed(sf::Mouse::Left), "Mouse Left")\
+    X(MouseRight, sf::Mouse::isButtonPressed(sf::Mouse::Right), "Mouse Right")\
+    X(Space, sf::Keyboard::isKeyPressed(sf::Keyboard::Space), "Space")\
+    X(Escape, sf::Keyboard::isKeyPressed(sf::Keyboard::Escape), "Escape")\
+    X(Action_1, sf::Keyboard::isKeyPressed(sf::Keyboard::Num1), "Action 1")\
+    X(Action_2, sf::Keyboard::isKeyPressed(sf::Keyboard::Num2), "Action 2")\
+    X(Action_3, sf::Keyboard::isKeyPressed(sf::Keyboard::Num3), "Action 3")\
+    X(Up, sf::Keyboard::isKeyPressed(sf::Keyboard::Z), "Up")\
+    X(Down, sf::Keyboard::isKeyPressed(sf::Keyboard::S), "Down")\
+    X(Left, sf::Keyboard::isKeyPressed(sf::Keyboard::Q), "Left")\
+    X(Right, sf::Keyboard::isKeyPressed(sf::Keyboard::D), "Right")
+
+
 class Input {
     GIVE_ACCESS_DEBUG()
 
 public:
     enum class Button {
-        MouseLeft,
-        MouseRight,
-        Space,
-        Escape,
-        Action_1,
-        Action_2,
-        Action_3
+#define X(a, b, c) a,
+    X_BUTTON(X)
+#undef X
     };
 
     enum class ButtonState {

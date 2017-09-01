@@ -1,4 +1,5 @@
 #include <GameState/Camera.h>
+namespace _ {
 
 Camera::Camera(float x, float y, float zoom) : x(x), y(y), zoom(zoom) {
     checkPosition();
@@ -55,4 +56,5 @@ void Camera::checkZoom() {
         zoom = min_zoom;
     else if (zoom > max_zoom)
         zoom = max_zoom;
+}
 }

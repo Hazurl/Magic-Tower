@@ -1,4 +1,4 @@
-SRC_DIR := src/Collider src/Utilities src/GameState src/Interface src/Action src/GameObject src/Components src/Components/Data src/Components/Renderer src
+SRC_DIR := src/Collider src/Utilities src/GameState src/Interface src/Action src/GameObject src/Components src/Components/Camera src/Components/Data src/Components/Renderer src
 
 SRC := $(foreach d,$(SRC_DIR),$(wildcard $(d)/*.cpp))
 

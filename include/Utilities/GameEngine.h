@@ -13,7 +13,8 @@
 #include <Utilities/PrefabFactory.h>
 #include <Utilities/Converter.h>
 
-#include <GameState/Camera.h>
+#include <Components/Camera/Camera.h>
+#include <Components/Camera/CameraMotionControler.h>
 
 #include <Components/Renderer/Renderer.h>
 #include <Components/Data/Hex.h>
@@ -37,7 +38,8 @@ private:
     sf::RenderWindow window;
 
     haz::Environement env;
-    Camera camera;
+
+    Camera* camera;
 };
 
 #endif

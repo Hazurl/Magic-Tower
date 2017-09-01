@@ -17,8 +17,10 @@ int GameEngine::start() {
 
     haz::Time time;
 
-    auto* m = env.instantiate("map");
-    m->addComponent<Map>();
+    camera = env.instantiate("camera")->addComponent<Camera>(SCREEN_WIDTH, SCREEN_HEIGHT);
+    camera->addComponent<CameraMotionControler>(camera->getComponent<Camera>());
+    env.instantiate("map")->addComponent<Map>();
+    camera->gameobject()->pretty_console();
     
     env.print_to_tree();
 
@@ -57,20 +59,19 @@ void GameEngine::manageEvents() {
 void GameEngine::manageDraw() {
     window.clear(sf::Color(50, 50, 50));
     
-    sf::Vector2u screen = window.getSize();
-    sf::Vector2f positionOffset = to_sfml<float>(camera.getPosition() + (to_haz<float, unsigned int>(screen) / 2.f));
-    float positionFactor = camera.getZoom() * Renderer::pixel_per_unit;
+    sf::Vector2f positionOffset = to_sfml<float>(camera->transform()->globalPosition()) + sf::Vector2f {camera->width() / 2, camera->height() / 2};
+    float positionFactor = camera->zoom() * Renderer::pixel_per_unit;
 
     for (auto* rend : Renderer::get()) {
         auto partialSprite = rend->getPartialSprite();
 
         partialSprite.position = partialSprite.position * positionFactor + positionOffset;
-        partialSprite.scale *= camera.getZoom();
+        partialSprite.scale *= camera->zoom();
 
         sf::Sprite sprite = partialSprite.to_sprite();
         auto bounds = sprite.getGlobalBounds();
 
-        if (bounds.left < screen.x && bounds.top < screen.y && (bounds.left + bounds.width) > 0 && (bounds.top + bounds.height) > 0) {
+        if (bounds.left < camera->width() && bounds.top < camera->height() && (bounds.left + bounds.width) > 0 && (bounds.top + bounds.height) > 0) {
             window.draw(sprite);
         }
     }
@@ -87,7 +88,8 @@ void GameEngine::manageUpdates(haz::Time const& time) {
 
     if (Input::isReleased(Input::Button::MouseLeft)) {
         auto mouse_screen_position = Input::getMousePosition();
-        auto mouse_world_position = (mouse_screen_position - (to_haz<float, unsigned int>(window.getSize()) / 2.f) - camera.getPosition()) / (camera.getZoom() * Renderer::pixel_per_unit);
+        auto mouse_world_position = (mouse_screen_position - (to_haz<float, unsigned int>(window.getSize()) / 2.f) 
+                                     - camera->transform()->position()) / (camera->zoom() * Renderer::pixel_per_unit);
         std::cout << "mouse_screen_position : " << mouse_screen_position << std::endl;
         std::cout << "mouse_world_position : " << mouse_world_position << std::endl;
         auto hex = haz::_2D::Physic::raycast_first(&env, mouse_world_position, haz::Layers::Ground);
@@ -97,6 +99,4 @@ void GameEngine::manageUpdates(haz::Time const& time) {
             std::cout << "Nothing under the mouse" << std::endl;
         }
     }
-
-    camera.moveZoom(Input::getScroll());
 }

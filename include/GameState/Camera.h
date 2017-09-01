@@ -5,6 +5,7 @@
 #include <Utilities/DebugMacro.h>
 #include <frameworkHaz/Geometry/2D/Vector.hpp>
 
+namespace _ {
 class Camera {
     GIVE_ACCESS_DEBUG()
 public:
@@ -31,4 +32,5 @@ private:
     const float min_zoom = 0.5, max_zoom = 3;
 };
 
+}
 #endif
