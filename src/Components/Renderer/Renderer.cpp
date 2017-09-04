@@ -48,7 +48,11 @@ void Renderer::onDisable() {
     unsubscribe();
 }
 
-void Renderer::update(haz::Time const& , haz::Environement* ) {
+void Renderer::update() {
+
+}
+
+Renderer::PartialSprite Renderer::getPartialSprite() {
     haz::_2D::Vectorf haz_scale = transform()->globalScale();
     partialSprite.scale = {haz_scale.x * scale_factor_width, haz_scale.y * scale_factor_height};
     
@@ -56,9 +60,7 @@ void Renderer::update(haz::Time const& , haz::Environement* ) {
 
     haz::_2D::Vectorf haz_pos = transform()->globalPosition();
     partialSprite.position = {haz_pos.x, haz_pos.y};
-}
-
-Renderer::PartialSprite Renderer::getPartialSprite() {
+    
     return partialSprite;
 }
 

@@ -37,7 +37,7 @@ public:
     void onEnable();
     void onDisable();
 
-    void update(haz::Time const& time, haz::Environement* e) override;
+    void update() override;
 
     static inline std::vector<Renderer*> get () { return haz::Subscriber<Renderer>::get(); }
 

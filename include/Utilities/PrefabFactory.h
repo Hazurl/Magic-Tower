@@ -9,19 +9,16 @@ enum class PrefabType {
 };
 
 class PrefabFactory {
-    typedef haz::Factory<haz::GameObject, PrefabType> Fact;
+    typedef haz::Factory<haz::GameObject, PrefabType, haz::GameObject::CopyAllocator> Fact;
     
 public:
 
     static haz::GameObject* createObject(PrefabType const& key, haz::GameObject* parent = nullptr);
-
-    static void useEnvironement(haz::Environement* env);
         
 private:
 
     static void Init();
 
-    static haz::Environement* env;
     static bool init;
 };
 

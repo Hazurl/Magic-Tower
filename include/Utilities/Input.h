@@ -21,6 +21,9 @@
     X(Left, sf::Keyboard::isKeyPressed(sf::Keyboard::Q), "Left")\
     X(Right, sf::Keyboard::isKeyPressed(sf::Keyboard::D), "Right")
 
+#define X_AXIS(X)\
+X(Vertical, Down, Up)\
+X(Horizontal, Left, Right)
 
 class Input {
     GIVE_ACCESS_DEBUG()
@@ -28,7 +31,13 @@ class Input {
 public:
     enum class Button {
 #define X(a, b, c) a,
-    X_BUTTON(X)
+        X_BUTTON(X)
+#undef X
+    };
+
+    enum class Axis {
+#define X(a, b, c) a,
+        X_AXIS(X)
 #undef X
     };
 
@@ -47,6 +56,8 @@ public:
     static bool isUp(Button but);
     static bool isDown(Button but);
     static float getScroll();
+
+    static int getAxis(Axis axis);
 
     static ButtonState getButtonState(Button but);
 

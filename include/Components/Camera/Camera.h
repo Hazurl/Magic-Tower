@@ -12,7 +12,7 @@ public:
     std::string to_string() const;
     std::vector<std::string> pretty_strings () const;
 
-    void update(haz::Time const& t, haz::Environement* e);
+    void update();
 
     float zoom() const;
     void zoom(float zoom);

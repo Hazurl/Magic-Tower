@@ -24,6 +24,8 @@ public:
     
     haz::Component* clone(haz::GameObject* go) const;
 
+    unsigned int getSize() const;
+
     const Hex* getHexAt(int x, int y) const;
     Hex* getHexAt(int x, int y);
 

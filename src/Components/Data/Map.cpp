@@ -16,6 +16,10 @@ std::string Map::to_string() const {
     return "{ size " + std::to_string(size) + " }";
 }
 
+unsigned int Map::getSize() const {
+    return size;
+}
+
 bool Map::hexOnSameLine (const Hex* hex0, const Hex* hex1) const {
     return hex0->getX() == hex1->getX() || hex0->getY() == hex1->getY() || -(hex0->getX() - hex1->getX()) == (hex0->getY() - hex1->getY());
 }

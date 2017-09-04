@@ -5,7 +5,6 @@
 
 #include <cmath>
 
-haz::Environement* PrefabFactory::env = nullptr;
 bool PrefabFactory::init = false;
 
 void PrefabFactory::Init() {
@@ -18,6 +17,7 @@ void PrefabFactory::Init() {
     hex->addComponent<haz::_2D::PolygonCollider>(std::vector<haz::_2D::Vectorf>{{0, -0.5}, {factor, -0.25}, {factor, 0.25}, {0, 0.5}, {-factor, 0.25}, {-factor, -0.25}});
     hex->setActive(false);
     hex->setLayers(haz::Layers::Ground);
+    hex->detach();
 
     Fact::registerObject(PrefabType::Hex, hex);
 }
@@ -26,15 +26,9 @@ haz::GameObject* PrefabFactory::createObject(PrefabType const& key, haz::GameObj
     if (!PrefabFactory::init)
         PrefabFactory::Init();
 
-    haz::GameObject* go = env->instantiate(*Fact::original(key));
+    haz::GameObject* go = Fact::createObject(key);
     go->setActive(true);
-
-    if (parent != nullptr)
-        go->parent(parent);
+    go->parent(parent);
 
     return go;
-}
-
-void PrefabFactory::useEnvironement(haz::Environement* env) {
-    PrefabFactory::env = env;
 }

@@ -24,7 +24,7 @@ std::vector<std::string> Camera::pretty_strings () const {
     };
 }
 
-void Camera::update(haz::Time const&, haz::Environement*) {
+void Camera::update() {
 
 }
 

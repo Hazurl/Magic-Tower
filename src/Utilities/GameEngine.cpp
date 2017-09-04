@@ -3,8 +3,6 @@
 GameEngine::GameEngine() : window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Magic Tower", sf::Style::Titlebar | sf::Style::Close) {
     //window.setFramerateLimit(WINDOW_FPS);
     window.setPosition({500, 0});
-
-    PrefabFactory::useEnvironement(&env);
 }
 
 GameEngine::~GameEngine() {
@@ -15,22 +13,23 @@ int GameEngine::start() {
     SceneManager::changeScene(SceneManager::Scene::Game);
     SceneManager::onNewFrame();
 
-    haz::Time time;
+    haz::Engine::start();
 
-    camera = env.instantiate("camera")->addComponent<Camera>(SCREEN_WIDTH, SCREEN_HEIGHT);
-    camera->addComponent<CameraMotionControler>(camera->getComponent<Camera>());
-    env.instantiate("map")->addComponent<Map>();
+    auto* map = (new haz::GameObject("map"))->addComponent<Map>();
+
+    camera = (new haz::GameObject("camera"))->addComponent<Camera>(SCREEN_WIDTH, SCREEN_HEIGHT);
+    camera->addComponent<CameraMotionControler>(camera->getComponent<Camera>(), haz::_2D::Vectorf(map->getSize(), map->getSize()));
+
     camera->gameobject()->pretty_console();
+    haz::GameObject::findOfName("map")->getComponent<Map>()->getHexAt(0,0)->gameobject()->pretty_console();
     
-    env.print_to_tree();
+    //env.print_to_tree();
 
     while (window.isOpen()) {
-        time.update();
-
         SceneManager::onNewFrame();
 
         manageEvents();
-        manageUpdates(time);
+        manageUpdates();
         manageDraw();
     }
 
@@ -59,13 +58,15 @@ void GameEngine::manageEvents() {
 void GameEngine::manageDraw() {
     window.clear(sf::Color(50, 50, 50));
     
-    sf::Vector2f positionOffset = to_sfml<float>(camera->transform()->globalPosition()) + sf::Vector2f {camera->width() / 2, camera->height() / 2};
+    sf::Vector2f cameraPos = to_sfml<float>(camera->transform()->globalPosition());
+    sf::Vector2f screenOffset = sf::Vector2f {camera->width() / 2, camera->height() / 2};
     float positionFactor = camera->zoom() * Renderer::pixel_per_unit;
+
 
     for (auto* rend : Renderer::get()) {
         auto partialSprite = rend->getPartialSprite();
 
-        partialSprite.position = partialSprite.position * positionFactor + positionOffset;
+        partialSprite.position = (partialSprite.position - cameraPos) * positionFactor + screenOffset;
         partialSprite.scale *= camera->zoom();
 
         sf::Sprite sprite = partialSprite.to_sprite();
@@ -79,12 +80,10 @@ void GameEngine::manageDraw() {
     window.display();
 }
 
-void GameEngine::manageUpdates(haz::Time const& time) {
+void GameEngine::manageUpdates() {
     Input::updateButtonsStates(window);
 
-    for(auto* c : env.getAllComponents()) {
-        c->update(time, &env);
-    }
+    haz::Engine::update();
 
     if (Input::isReleased(Input::Button::MouseLeft)) {
         auto mouse_screen_position = Input::getMousePosition();
@@ -92,11 +91,15 @@ void GameEngine::manageUpdates(haz::Time const& time) {
                                      - camera->transform()->position()) / (camera->zoom() * Renderer::pixel_per_unit);
         std::cout << "mouse_screen_position : " << mouse_screen_position << std::endl;
         std::cout << "mouse_world_position : " << mouse_world_position << std::endl;
-        auto hex = haz::_2D::Physic::raycast_first(&env, mouse_world_position, haz::Layers::Ground);
+        auto hex = haz::_2D::Physic::raycast_first(mouse_world_position, haz::Layers::Ground);
         if (hex) {
             hex->pretty_console();
         } else {
             std::cout << "Nothing under the mouse" << std::endl;
         }
+    }
+
+    if (Input::isReleased(Input::Button::Space)) {
+        camera->gameobject()->pretty_console();
     }
 }

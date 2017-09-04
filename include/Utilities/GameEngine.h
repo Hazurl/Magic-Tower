@@ -32,12 +32,10 @@ public:
 
 private:
     void manageEvents();
-    void manageUpdates(haz::Time const& time);
+    void manageUpdates();
     void manageDraw();
 
     sf::RenderWindow window;
-
-    haz::Environement env;
 
     Camera* camera;
 };

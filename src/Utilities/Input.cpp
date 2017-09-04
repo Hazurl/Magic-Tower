@@ -54,6 +54,16 @@ float Input::getScroll() {
     return Input::scroll;
 }
 
+int Input::getAxis(Input::Axis axis) {
+    switch (axis) {
+#define X(a, b, c) case Input::Axis::a: return (Input::isDown(Input::Button::b) ? -1 : Input::isDown(Input::Button::c) ? 1 : 0);
+        X_AXIS(X)
+#undef X
+    }
+
+    HAZ_ASSERT(false);
+}
+
 Input::ButtonState Input::getButtonState(Input::Button but) {
     assert(Input::inputs.find(but) != Input::inputs.end());
 
